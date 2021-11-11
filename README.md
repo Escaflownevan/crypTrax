@@ -25,3 +25,7 @@ To get a free API key visit [Nomics.com free plan](https://p.nomics.com/pricing#
 
 ![alt text](https://i.ibb.co/HHKTZSL/dct1.jpg)
 ![alt text](https://i.ibb.co/rMZjz5x/dct2.jpg)
+
+#### Donation
+BTC: bc1qrjjsck4v7q46ug26eds0klvm87mc4mfdhal7vu
+ETH: 0xA62e2C0605A0615ED700AeeAFbF08bE4C554007e
