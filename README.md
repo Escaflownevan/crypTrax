@@ -11,6 +11,11 @@ This is a hobby project with VUE.js and Electron to track cryptocurrencies. The 
 - Base currencies: USD, EUR, AUD
 - Customizable categories
 - Trandingview.com multiwindow view
+- Checking every 10 Days for new currencies
+
+## Download
+Windows client only, at the moment, go to [Releases](https://github.com/Escaflownevan/Desktop-Crypto-Tracker/releases) and pick latest "Desktop-Crypto-Tracker-Win-x64.zip"
+
 
 ### Nomics Account
 
