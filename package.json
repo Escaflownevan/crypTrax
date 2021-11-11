@@ -1,0 +1,65 @@
+{
+  "name": "Desktop-Crypto-Tracker",
+  "version": "1.0.0",
+  "author": "esca<esca@esca.com>",
+  "homepage": "https://johndoe.com/",
+  "description": "VUE + Electron. App to list and watch crypto currencies",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:linux": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
+  },
+  "main": "background.js",
+  "dependencies": {
+    "axios-retry": "^3.2.4",
+    "core-js": "^3.8.3",
+    "electron-builder": "^22.9.1",
+    "electron-window-state": "^5.0.3",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "vue": "^2.6.12",
+    "vue-axios": "^2.1.5",
+    "vue-cli-plugin-axios": "0.0.4",
+    "vue-multiselect": "^2.1.6",
+    "vue-sparklines": "^0.2.1",
+    "vuedraggable": "^2.24.3"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.4.6",
+    "@vue/cli-plugin-eslint": "^4.4.6",
+    "@vue/cli-plugin-vuex": "^4.5.15",
+    "@vue/cli-service": "^4.5.11",
+    "axios": "^0.21.1",
+    "babel-eslint": "^10.1.0",
+    "electron": "^9.4.3",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "vue-cli-plugin-electron-builder": "^2.0.0-rc.6",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

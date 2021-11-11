@@ -1,0 +1,139 @@
+<template>
+<div id="addCoinsWrapper">
+    <h2>Add cryptocurrencys</h2>
+    <multiselect v-model="value" :options="options" :options-limit="3000" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Search cryptocurrencies" label="name" track-by="name">
+        <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} Coins selected</span></template>
+        <template slot="option" slot-scope="props"><img class="option__image" :src="''+props.option.logo_url">
+            <div class="option__desc"><span class="option__small">#{{ props.option.rank }} - </span><span class="option__title">{{ props.option.name }}</span></div>
+        </template>
+    </multiselect>
+    <button @click="actData">Add Coins</button>
+
+</div>
+</template>
+
+<script>
+import Multiselect from 'vue-multiselect'
+
+export default {
+    name: 'addCoin',
+    components: {
+        Multiselect
+    },
+    data() {
+        return {
+            options: this.$root.$coins,
+            value: [],
+            myCoins: this.$root.$coins,
+            boughtCoins: this.$root.$boughtCoins
+        }
+    },
+    methods: {
+        actData() {
+
+            let el = JSON.parse(JSON.stringify(this.value))
+
+            el.forEach((item) => {
+                let flag = true
+
+                if (this.$root.$myCoins != null) {
+                    this.$root.$myCoins.forEach((item2) => {
+                        if (item.rank === item2.rank) {
+                            flag = false
+                        }
+                    })
+                } else {
+                    this.$root.$myCoins = []
+                }
+
+
+
+
+
+
+                if (flag) {
+
+                    this.$root.$myCoins.push(item)
+
+                    let obj = {
+                        id: item.id,
+                        ammount: 0,
+                        boughtPrice: 0
+                    }
+
+                    this.$root.$boughtCoins.push(obj)
+
+                    this.saveLocal('boughtCoins', this.$root.$boughtCoins)
+                }
+            })
+
+            this.saveLocal('myCoinsLocal', this.$root.$myCoins)
+
+            this.value = []
+
+            try {
+                clearInterval(this.$parent.$parent.$children[0].timerInterval)
+                this.$parent.$parent.$children[0].timePassed = 0
+                this.$parent.$parent.$children[0].onTimesUp()
+            } catch (e) {
+                //console.log(e)
+            }
+
+            try {
+                clearInterval(this.$parent.$parent.$children[1].timerInterval)
+                this.$parent.$parent.$children[1].timePassed = 0
+                this.$parent.$parent.$children[1].onTimesUp()
+            } catch (e) {
+                //console.log(e)
+            }
+
+            try {
+
+                clearInterval(this.$parent.$parent.$children[2].timerInterval)
+                this.$parent.$parent.$children[2].timePassed = 0
+                this.$parent.$parent.$children[2].onTimesUp()
+            } catch (e) {
+                //console.log(e)
+            }
+
+
+
+
+
+
+
+        }
+    },
+    mounted() {
+
+        if (this.$root.$myCoins) {
+            this.triggerFlag = false
+        }
+    }
+
+}
+</script>
+
+
+<style scoped>
+#addCoinsWrapper {
+    width: 400px;
+    max-width: 400px;
+}
+
+.option__image {
+    width: 50px;
+    height: 50px;
+}
+
+.multiselect {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.option__desc {
+    position: absolute;
+    left: 70px;
+    top: 30px;
+}
+</style>
