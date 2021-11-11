@@ -11,6 +11,7 @@ This is a hobby project with VUE.js and Electron to track cryptocurrencies. The 
 - Base currencies: USD, EUR, AUD
 - Customizable categories
 - Trandingview.com multiwindow view
+- Update coin data every 1 minute
 - Checking every 10 Days for new currencies
 
 ## Download
