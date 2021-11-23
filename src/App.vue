@@ -3,7 +3,7 @@
     <div v-if="showLoader" id="loaderFrame">
 
         <h1>Top 3000 Cryptocurrencies are loading by coingeko.com</h1>
-
+        <span>This can take a few minutes...</span>
         <div class="loader">
 
 
@@ -53,7 +53,7 @@ export default {
         }
     },
     created() {
-
+        
 
         if (this.loadLocal('settings')) {
             this.$root.$settings = this.loadLocal('settings')

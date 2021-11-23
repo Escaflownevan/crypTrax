@@ -203,7 +203,7 @@ export default {
                 document.getElementById("holderIframes").innerHTML = '<h1>Please add currency via menu -> Tradingview</h1> <i  class="fa fa-arrow-right noListArrow"></i>'
 
             }
-            
+
         },
         getApiData() {
             if (this.loadLocal('allCoinsDate') < (Date.now() - 864000000)) { //check ever 10 Days for new Coins
@@ -211,40 +211,50 @@ export default {
                 this.$parent._data.totalCounter = this.maxCoins
 
                 var load_list = async () => {
-                    console.log("Durchläufe: " + this.countCircle + " / " + this.maxCoins)
+                    console.log("Runs: " + this.countCircle + " / " + this.maxCoins)
                     this.$parent._data.counter = this.countCircle - 1
+                    try {
+                        let data = await CoinGeckoClient.coins.markets({
+                            per_page: 250,
+                            page: this.countCircle,
+                            localization: false,
+                            vs_currency: this.$root.$settings.fiat
+                        });
 
-                    let data = await CoinGeckoClient.coins.markets({
-                        per_page: 250,
-                        page: this.countCircle,
-                        localization: false,
-                        vs_currency: this.$root.$settings.fiat
-                    });
+                        data.data.forEach((item) => {
+                            let d = {
+                                "id": item.id,
+                                "name": item.name,
+                                "symbol": item.symbol.toUpperCase(),
+                                "logo_url": item.image,
+                                "rank": item.market_cap_rank.toString()
+                            }
+                            this.$root.$coins.push(d)
+                        })
+                        if (this.maxCoins == this.countCircle) {
+                            this.$root.$coins.sort((a, b) => (parseInt(a.rank) > parseInt(b.rank)) ? 1 : ((parseInt(b.rank) > parseInt(a.rank)) ? -1 : 0))
+                            this.childDataLoaded = true
+                            this.$parent._data.showLoader = false
+                            this.saveLocal('allCoinsDate', Date.now())
+                            this.countCircle = 0
 
-                    data.data.forEach((item) => {
-                        let d = {
-                            "id": item.id,
-                            "name": item.name,
-                            "symbol": item.symbol.toUpperCase(),
-                            "logo_url": item.image,
-                            "rank": item.market_cap_rank.toString()
+                            this.saveLocal('allCoinsLocal', this.$root.$coins)
+
+                        } else {
+                            let this2 = this
+                            setTimeout(function(){
+                                this2.countCircle++
+                                this2.forceRerender()
+                                load_list()
+                            },1000)
+
                         }
-                        this.$root.$coins.push(d)
-                    })
-                    if (this.maxCoins == this.countCircle) {
-                        this.$root.$coins.sort((a, b) => (parseInt(a.rank) > parseInt(b.rank)) ? 1 : ((parseInt(b.rank) > parseInt(a.rank)) ? -1 : 0))
-                        this.childDataLoaded = true
-                        this.$parent._data.showLoader = false
-                        this.saveLocal('allCoinsDate', Date.now())
-                        this.countCircle = 0
-
-                        this.saveLocal('allCoinsLocal', this.$root.$coins)
-
-                    } else {
-                        this.countCircle++
-                        this.forceRerender()
-                        load_list()
+                    } catch (e) {
+                        console.log(e)
+                        this.getApiData()
+                        console.log("Restart loading Top3000")
                     }
+
 
                 };
                 load_list()

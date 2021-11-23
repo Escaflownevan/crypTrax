@@ -16,8 +16,9 @@ This is a hobby project with VUE.js + Electron to track your cryptocurrencies. T
 
 ## Download
 
-Windows client only, at the moment, go to [Releases](https://github.com/Escaflownevan/Desktop-Crypto-Tracker/releases) and pick latest "Desktop-Crypto-Tracker-Win-x64.zip". Unzip -> Run.
+Windows client only, at the moment, go to releases and pick latest "Desktop-Crypto-Tracker-Win-x64.zip". Unzip -> Run.
 
+Download: -> [Releases](https://github.com/Escaflownevan/Desktop-Crypto-Tracker/releases)
 
 
 ### Program in use

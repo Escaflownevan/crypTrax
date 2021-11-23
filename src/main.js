@@ -4,6 +4,7 @@ import '@/vueHelper/mixin'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import Sparkline from 'vue-sparklines'
 
+
 Vue.config.productionTip = false
 Vue.use(Sparkline)
 
