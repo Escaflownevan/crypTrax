@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-/Coins-linux-x64
+
 
 # local env files
 .env.local

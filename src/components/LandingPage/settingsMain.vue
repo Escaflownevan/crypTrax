@@ -72,7 +72,7 @@
                 </div>
                 <div class="spacerCard">
 
-                    <input class="sonstigesInput" @change="cmcChange" type="checkbox" name="showCMCIcon" :checked="cmc_logo" /><label v-if="!settingsCat.isHiddenTimer" for="showCMCIcon"> Show the Coinmarketcap logo next to the currency name</label>
+                    <input class="sonstigesInput" @change="cmcChange" type="checkbox" name="showCMCIcon" :checked="cg_logo" /><label v-if="!settingsCat.isHiddenTimer" for="showCMCIcon"> Show the Coingecko.com logo next to the currency name</label>
 
                 </div>
             </div>
@@ -95,10 +95,10 @@ import toggleView from './settings/toggleView'
 import tradingView from './settings/tradingView'
 import Multiselect from 'vue-multiselect'
 export default {
-    name: 'settings',
+    name: 'settingsMain',
     data() {
         return {
-            cmc_logo: this.$root.$settings.cmc_logo,
+            cg_logo: this.$root.$settings.cg_logo,
             menuShow: false,
             fiat: ['EUR', 'USD', 'AUD'],
             value: this.$root.$settings.fiat,
@@ -168,10 +168,10 @@ export default {
                 yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none'
             });
 
-            if (this.$root.$settings.cmc_logo) {
-                this.$root.$settings.cmc_logo = false
+            if (this.$root.$settings.cg_logo) {
+                this.$root.$settings.cg_logo = false
             } else {
-                this.$root.$settings.cmc_logo = true
+                this.$root.$settings.cg_logo = true
             }
             this.saveLocal('settings', this.$root.$settings)
         },

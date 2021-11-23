@@ -1,29 +1,8 @@
 <template>
 <div id="app">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <div v-if="showLoader" id="loaderFrame">
 
-    <div v-if="noAPIKey" id="nomicsInput">
-        <h1 class="extra">Desktop Crypto Tracker</h1>
-        <h2 class="extra2">Nomics.com API Key</h2>
-
-        <input id="APIKey" type="text" name="Nomics API" placeholder="Your API key" />
-        <button @click="apicheck()" type="button" name="button">Check & Save</button>
-
-        <div class="apiTutorial ">
-            <h3>No API Key?</h3>
-            <p class="infoP">Visit <a target="_blank" title="Nomics.com Free API Key" href="https://p.nomics.com/pricing#free-plan">Nomics.com</a> to get a free API key.</p>
-            <span>-- 1/3 --</span>
-            <img :src="require(`./assets/n1.jpg`)" />
-            <span>-- 2/3 --</span>
-            <img :src="require(`./assets/n2.jpg`)" />
-            <span>-- 3/3 --</span>
-            <img :src="require(`./assets/n3.jpg`)" />
-        </div>
-    </div>
-
-    <div v-if="showLoader && !noAPIKey" id="loaderFrame">
-
-        <h1>Top 3000 Cryptocurrencies are loaded by nomics.com</h1>
+        <h1>Top 3000 Cryptocurrencies are loading by coingeko.com</h1>
 
         <div class="loader">
 
@@ -50,8 +29,7 @@
 
         </div>
         <h2><strong>{{showPercent()}} %</strong></h2>
-        <h3>{{this.error}}</h3>
-        <h4 v-if="this.restartTimer > 0">Restart in: {{this.restartTimer}} sek</h4>
+
     </div>
 
     <LandingPage></LandingPage>
@@ -62,7 +40,7 @@
 import LandingPage from './components/LandingPage'
 
 export default {
-    name: 'coins',
+    name: 'coinsMain',
     components: {
         LandingPage
     },
@@ -70,11 +48,7 @@ export default {
         return {
             counter: 0,
             totalCounter: 0,
-            error: "",
-            restartTimer: 0,
-            restartTimerShow: 0,
             showLoader: true,
-            noAPIKey: true,
             categories: ['Logo', 'Name', 'Rank', 'Price', '1 h', '24 h', '7 Days', 'Cap', 'Value', 'Profit/Loss', 'ATH', '30 Days', 'Delete']
         }
     },
@@ -88,8 +62,8 @@ export default {
             this.$root.$settings = {
                 blockView: false,
                 timer: false,
-                btcecho: true,
-                cmc_logo: true,
+                btcecho: false,
+                cg_logo: true,
                 table_sort: '',
                 fiat: 'USD',
                 tv: [],
@@ -181,13 +155,7 @@ export default {
     },
     mounted() {
 
-
-        if (this.$root.$settings.nomics_api != undefined) {
-
-            this.noAPIKey = false
-
             this.$children[0].getApiData()
-        }
 
     },
     methods: {
@@ -198,43 +166,6 @@ export default {
                 return parseFloat((((this.counter * 500) / (this.totalCounter * 500)) * 100)).toFixed(0)
             }
 
-        },
-        apicheck() {
-            var value = document.getElementById('APIKey').value
-            var re = /[0-9A-Fa-f]{6}/g;
-
-            if (re.test(value) && value.length >= 32) {
-                let link = "https://api.nomics.com/v1/currencies/ticker?key=" + value + "&ids=BTC"
-                this.$axios.get(link).then(response => {
-                        if (response.status == 200) {
-                            this.$root.$settings.nomics_api = value
-                            this.saveLocal('settings', this.$root.$settings)
-                            this.noAPIKey = false
-                            this.showLoader = true
-
-
-                            this.$children[0].getApiData()
-                        }
-                    })
-                    .catch(error => {
-                        confirm("API key invalid! Please check your key")
-
-                        if (error.response.status == 429) {
-                            this.apicheck()
-                        }
-
-                    })
-
-
-
-
-
-            } else {
-                confirm('Entry invalid, please check! Too short and / or wrong characters');
-
-            }
-
-            re.lastIndex = 0;
         }
     },
     watch: {
@@ -254,27 +185,14 @@ export default {
                 }
                 bar.classList.add("bar-" + percent.slice(2, 4))
             }
-        },
-        restartTimer: {
-            handler() {
-
-                if (this.restartTimer >= 0) {
-                    setTimeout(() => {
-
-                        this.restartTimer--;
-                    }, 1000);
-                }
-
-            },
-            immediate: true // This ensures the watcher is triggered upon creation
         }
     }
-
-
 }
 </script>
 
 <style lang="scss" scoped>
+@use "sass:math";
+@import url('../node_modules/@fortawesome/fontawesome-free/css/all.min.css');
 h2 {
     color: black;
 }
@@ -318,7 +236,8 @@ body {
 }
 h1:not(.extra) {
     font-size: 4vw;
-
+    margin-left: 50px;
+    margin-right: 50px;
     margin-bottom: 4vw;
 }
 h2 {
@@ -486,7 +405,7 @@ $growColor: rgba($red, .6);
 @for $i from 0 to 101 {
     .bar-#{$i} {
         .growing-bar {
-            width: percentage($i/100);
+            width: percentage(math.div($i, 100));
         }
     }
 }
@@ -573,13 +492,13 @@ input[id='lime']:checked ~ .actions label[for='lime'] {
 }
 
 input[id='red']:checked ~ .chart {
-    @extend .bar.red;
+    @extend .red;
 }
 input[id='cyan']:checked ~ .chart {
-    @extend .bar.cyan;
+    @extend .cyan;
 }
 input[id='lime']:checked ~ .chart {
-    @extend .bar.lime;
+    @extend .lime;
 }
 
 input[id='pos-0']:checked ~ .chart {

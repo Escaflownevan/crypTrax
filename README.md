@@ -1,8 +1,8 @@
-# Desktop Cryptocurrencies Tracker
+# Desktop Crypto Tracker
 
 ## Info
 
-This is a hobby project with VUE.js and Electron to track cryptocurrencies. The data is obtained from Nomics.com, so a free account is required there to use the program.
+This is a hobby project with VUE.js + Electron to track your cryptocurrencies. The data is obtained from Coingecko.com.
 
 ## Details
 
@@ -10,18 +10,15 @@ This is a hobby project with VUE.js and Electron to track cryptocurrencies. The 
 - Profit / Loss calculator
 - Base currencies: USD, EUR, AUD
 - Customizable categories
-- Trandingview.com multiwindow view
-- Update coin data every 1 minute
+- Trandingview.com multi window view
+- Update coins data every 1 minute
 - Checking every 10 Days for new currencies
 
 ## Download
 
-Windows client only, at the moment, go to [Releases](https://github.com/Escaflownevan/Desktop-Crypto-Tracker/releases) and pick latest "Desktop-Crypto-Tracker-Win-x64.zip"
+Windows client only, at the moment, go to [Releases](https://github.com/Escaflownevan/Desktop-Crypto-Tracker/releases) and pick latest "Desktop-Crypto-Tracker-Win-x64.zip". Unzip -> Run.
 
 
-### Nomics Account
-
-To get a free API key visit [Nomics.com free plan](https://p.nomics.com/pricing#free-plan)
 
 ### Program in use
 

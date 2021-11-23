@@ -23,30 +23,33 @@
             <h1 class="noList" v-if="list.length == 0">Please add currency via menu -> Coins</h1>
             <i v-if="list.length == 0" class="fa fa-arrow-right noListArrow"></i>
             <draggable v-if="list.length != 0" v-model="list" tag="tbody" @end="checkMove">
-                <tr v-for="item in list" :key="item.id">
+                <tr v-for="item in list" :key="item.symbol">
                     <td :class="{hide: !view[0].view}"><img :title="item.name" :src="'' + item.logo_url" height="30px" /></td>
-                    <td :class="{hide: !view[1].view}" class="nameCol"><a :title="item.name+' open on Tradingview.com'" target="_blank" :href="'https://www.tradingview.com/chart/?symbol=' + item.id + fiat"><strong>{{ item.name }}</strong></a>
-                        <a v-show="cmcView" class="cmc-icon" :title="item.name+' open on Coinmarketcap.com'" target="_blank" :href="'https://coinmarketcap.com/currencies/'+cmcName(item.name)"><img :src="require(`../../assets/CoinMarketCap_Logo.svg`)"
-                                height="20px" width="20px" /></a></td>
+                    <td :class="{hide: !view[1].view}" class="nameCol"><a :title="item.name+' open on Tradingview.com'" target="_blank" :href="'https://www.tradingview.com/chart/?symbol=' + item.symbol + 'USDT'"><strong>{{ item.name }}</strong></a>
+                        <a v-show="cmcView" class="cmc-icon" :title="item.name+' open on Coingeko.com'" target="_blank" :href="'https://www.coingecko.com/en/coins/'+item.id"><img :src="require(`../../assets/gecko.png`)" height="20px" width="20px" /></a></td>
                     <td :class="{hide: !view[2].view}">{{ item.rank }}</td>
-                    <td :class="{hide: !view[3].view}" v-if="formatPrice(item.price)"><strong>{{ formatedPrice }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></strong></td>
-                    <td v-if="item['1h']" :class="{positive: formatProzent (item, '1h') > 0, negative: formatProzent (item, '1h') < 0, hide: !view[4].view}">{{ formatProzent (item, '1h') }}<span> %</span></td>
+                    <td :class="{hide: !view[3].view}" v-if="item.price"><strong>{{ formatPrice(item.price) }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></strong></td>
+                    <td v-else>Loading</td>
+                    <td v-if="item.time1h" :class="{positive: item.time1h > 0, negative: item.time1h < 0, hide: !view[4].view}">{{ formatProzent(item.time1h) }}<span> %</span></td>
                     <td v-else>No Data</td>
-                    <td v-if="item['1d']" :class="{positive: formatProzent (item, '1d') > 0, negative: formatProzent (item, '1d') < 0,hide: !view[5].view}">{{ formatProzent (item, '1d') }}<span> %</span></td>
+                    <td v-if="item.time1d" :class="{positive: item.time1d > 0, negative: item.time1d < 0,hide: !view[5].view}">{{ formatProzent(item.time1d) }}<span> %</span></td>
                     <td v-else>No Data</td>
-                    <td v-if="item['7d']" :class="{positive: formatProzent (item, '7d') > 0, negative: formatProzent (item, '7d') < 0, hide: !view[6].view}">{{ formatProzent (item, '7d') }}<span> %</span></td>
+                    <td v-if="item.time7d" :class="{positive: item.time7d > 0, negative: item.time7d < 0, hide: !view[6].view}">{{ formatProzent(item.time7d) }}<span> %</span></td>
                     <td v-else>No Data</td>
                     <td :class="{hide: !view[7].view}">{{ formatCap(item.market_cap) }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
                     <td v-if="maxValue(item)" :class="{positive: maxValues > 0, negative: maxValues < 0, hide: !view[8].view}">{{ maxValues }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
+                    <td v-else>Loading</td>
                     <td v-if="compEqRef(item)" :class="{positive: profitLoss > 0, negative: profitLoss < 0, hide: !view[9].view}">{{ profitLoss }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
-                    <td :class="{hide: !view[10].view}" v-if="formatPrice(item.high)">{{ formatedPrice }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
+                    <td v-else>Loading</td>
+                    <td :class="{hide: !view[10].view}" v-if="item.high">{{ formatPrice(item.high) }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
+                    <td v-else>Loading</td>
                     <td :class="{hide: !view[11].view}">
-                        <p v-if="item.days30==undefined">Loading...</p>
+                        <p v-if="item.days30==undefined">Loading</p>
                         <sparkline v-if="item.days30!=undefined" width="100" height="30" :indicatorStyles="spIndicatorStyles3">
-                            <sparklineCurve :data="item.days30" :limit="item.days30.length" :styles="spCurveStyles3" :spotStyles="spSpotStyles3" :spotProps="spSpotProps3" :refLineType="spRefLineType3" :refLineStyles="spRefLineStyles3" />
+                            <sparklineCurve :data="item.days30.prices" :limit="item.days30.prices.length" :styles="spCurveStyles3" :spotStyles="spSpotStyles3" :spotProps="spSpotProps3" :refLineType="spRefLineType3" :refLineStyles="spRefLineStyles3" />
                         </sparkline>
                     </td>
-                    <td :class="{hide: !view[12].view}"><button :title="item.name+' delete'" @click="delCoin(item.id)" class="del">x</button></td>
+                    <td :class="{hide: !view[12].view}"><button :title="item.name+' delete'" @click="delCoin(item.symbol)" class="del">x</button></td>
                 </tr>
             </draggable>
         </table>
@@ -67,7 +70,7 @@ export default {
         return {
             list: this.$root.$myCoins,
             view: this.$root.$settings.view,
-            cmcView: this.$root.$settings.cmc_logo,
+            cmcView: this.$root.$settings.cg_logo,
             dragging: false,
             activeColor: '',
             boughtCoins: this.$root.$boughtCoins,
@@ -104,32 +107,24 @@ export default {
         }
     },
     methods: {
-        cmcName(name) {
-
-            let neu = name.replace(/: :/g, "-")
-
-            if (neu == "Uniswap-Protocol-Token") {
-
-                return "uniswap"
-            }
-            return neu.toLowerCase()
-        },
         formatPrice(price) {
-            let a = price.slice(price.indexOf('.') + 1, price.length)
-            for (let i = 0; i < a.length; i++) {
-                if (a.charAt(i) !== '0') {
-                    this.formatedPrice = price.slice(0, price.indexOf('.') + i + 3)
-                    return true
+            if(price.indexOf('.')>-1){
+                let a = price.slice(price.indexOf('.') + 1, price.length)
+                for (let i = 0; i < a.length; i++) {
+                    if (a.charAt(i) !== '0') {
+
+                        return price.slice(0, price.indexOf('.') + i + 3)
+                    }
                 }
+            }else{
+
+                return price
             }
+
         },
-        formatProzent(item, time) {
-            let obj = item[time].price_change_pct
-            let newobj = obj.replace('.', '')
-            let i = obj.indexOf('.') + 2
-            let a = newobj.slice(0, i) + '.' + newobj.slice(i)
-            let b = a.slice(0, a.indexOf('.') + 3)
-            return parseFloat(b)
+        formatProzent(item) {
+
+            return (Math.round(item * 100) / 100).toFixed(2);
         },
         formatCap(labelValue) {
             if (labelValue == undefined) {
@@ -138,7 +133,7 @@ export default {
             // Nine Zeroes for Billions
             return Math.abs(Number(labelValue)) >= 1.0e+12 ?
                 (Math.abs(Number(labelValue)) / 1.0e+12).toFixed(2) + ((this.fiat == "EUR") ? " Bil" : " Tril")
-                // Six Zeroes for Millions
+
                 :
                 Math.abs(Number(labelValue)) >= 1.0e+9 ?
                 (Math.abs(Number(labelValue)) / 1.0e+9).toFixed(1) + ((this.fiat == "EUR") ? " Mil" : " Bil")
@@ -166,13 +161,13 @@ export default {
         },
         delCoin(id) {
             this.$root.$myCoins.forEach((item, i) => {
-                if (item.id === id) {
+                if (item.symbol === id) {
                     this.$root.$myCoins.splice(i, 1)
                     this.saveLocal('myCoinsLocal', this.$root.$myCoins)
                 }
             })
             this.$root.$boughtCoins.forEach((item2, i) => {
-                if (item2.id === id) {
+                if (item2.symbol === id) {
                     this.$root.$boughtCoins.splice(i, 1)
                     this.saveLocal('boughtCoins', this.$root.$boughtCoins)
                 }
@@ -181,10 +176,16 @@ export default {
         },
         maxValue(item) {
             if (this.$root.$boughtCoins !== null) {
-                let obj = this.$root.$boughtCoins.filter(o => o.id === item.id)
+                let obj = this.$root.$boughtCoins.filter(o => o.symbol === item.symbol)
                 let c = String(obj[0].ammount * item.price)
-                this.maxValues = c.slice(0, c.indexOf('.') + 3)
-                return true
+                if (c.indexOf('.')>-1) {
+                    this.maxValues = c.slice(0, c.indexOf('.') + 3)
+                    return true
+                }else{
+                    this.maxValues = c
+                    return true
+                }
+
             } else {
                 this.maxValues = '0'
                 return true
@@ -192,12 +193,18 @@ export default {
         },
         compEqRef(item) {
             if (this.$root.$boughtCoins !== null) {
-                let obj = this.$root.$boughtCoins.filter(o => o.id === item.id)
+                let obj = this.$root.$boughtCoins.filter(o => o.symbol === item.symbol)
                 let a = obj[0].ammount * obj[0].boughtPrice
                 let b = obj[0].ammount * item.price
                 let c = String(b - a)
-                this.profitLoss = c.slice(0, c.indexOf('.') + 3)
-                return true
+                if (c.indexOf('.')>-1) {
+                    this.profitLoss = c.slice(0, c.indexOf('.') + 3)
+                    return true
+                }else{
+                    this.profitLoss = c
+                    return true
+                }
+
             } else {
                 this.profitLoss = '0'
                 return true
@@ -327,4 +334,9 @@ table {
     animation: bounceRight 2s infinite;
     float: right;
 }
+$variable: value 2;
+.sparkline-tooltip {
+  left: $variable;
+}
+
 </style>

@@ -35,8 +35,8 @@ const COLOR_CODES = {
 }
 
 const TIME_LIMIT = 60
-import axios from 'axios'
-import axiosRetry from 'axios-retry'
+const CoinGecko = require('coingecko-api');
+const CoinGeckoClient = new CoinGecko();
 
 export default {
     data() {
@@ -126,83 +126,82 @@ export default {
                 arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
                 return arr; // for testing
             }
-            let ids = '';
+            let idsCoins = '';
             let temparr = []
             this.$root.$myCoins = this.loadLocal('myCoinsLocal')
             if (this.$root.$myCoins != null) {
                 clearInterval(this.timerInterval)
 
                 this.$root.$myCoins.forEach((item, i) => {
-                    ids += item.id
-                    temparr.push(item.id)
+                    idsCoins += item.id.toLowerCase();
+                    temparr.push(item.symbol)
                     if (i !== this.$root.$myCoins.length - 1) {
-                        ids += ','
+                        idsCoins += ','
                     }
 
                 })
 
-                axiosRetry(axios, {
-                    retries: Infinity,
-                    retryDelay: (retryCount) => {
-                        console.log(`retry attempt: ${retryCount}`);
-                        return retryCount * 4000; // time interval between retries
+
+
+
+                var update_list = async() => {
+                    let data
+                    try {
+                         data = await CoinGeckoClient.coins.markets({ids: idsCoins,per_page: 250, localization: false, vs_currency: this.$root.$settings.fiat, price_change_percentage: "1h,24h,7d"});
+
+                    } catch (e) {
+                        console.log(e)
+                        this.timePassed = 0
+                        this.startTimer()
+                        console.log("ERROR RESTART COUNTDOWN")
                     }
-                });
 
-                this.$axios
-                    .get('https://api.nomics.com/v1/currencies/ticker?key=' + this.$root.$settings.nomics_api + '&ids=' + ids + '&interval=1h,1d,7d&convert=' + this.$root.$settings.fiat)
-                    .then(response => {
+                    for (let i = 0; i < temparr.length; i++) {
+                        for (let o = 0; o < data.data.length; o++) {
 
-                        for (let i = 0; i < temparr.length; i++) {
-                            for (let o = 0; o < response.data.length; o++) {
-                                if (temparr[i] == response.data[o].id) {
-                                    array_move(response.data, o, i)
-                                }
+                            if (temparr[i] == data.data[o].symbol.toUpperCase()) {
+                                array_move(data.data, o, i)
                             }
                         }
+                    }
 
-                        response.data.forEach((item, i) => {
-                            Object.assign(this.$root.$myCoins[i], {
-                                "id": item.id,
-                                "name": item.name,
-                                "logo_url": item.logo_url,
-                                "rank": item.rank,
-                                "price": item.price,
-                                "market_cap": item.market_cap,
-                                "high": item.high,
-                                "1h": item["1h"],
-                                "1d": item["1d"],
-                                "7d": item["7d"]
-                            });
-
+                    data.data.forEach((item, i) => {
+                        Object.assign(this.$root.$myCoins[i], {
+                            "id": item.id,
+                            "name": item.name,
+                            "symbol": item.symbol.toUpperCase(),
+                            "logo_url": item.image,
+                            "rank": item.market_cap_rank.toString(),
+                            "price": item.current_price.toString(),
+                            "market_cap": item.market_cap.toString(),
+                            "high": item.ath.toString(),
+                            "time1h": item.price_change_percentage_1h_in_currency.toString(),
+                            "time1d": item.price_change_percentage_24h_in_currency.toString(),
+                            "time7d": item.price_change_percentage_7d_in_currency.toString()
                         });
-                        this.saveLocal('myCoinsLocal', this.$root.$myCoins)
-                        let this2 = this
-                        setTimeout(function() {
-                            this2.$parent.get30Days()
-                        }, 1000)
-
-
-                        this.$parent.$parent._data.showLoader = false
-
-                        this.timePassed = 0
-                        this.startTimer()
-                        temparr = []
-                        this.$parent.forceRerender()
-                        console.log("Update loaded complete")
 
                     })
-                    .catch(error => {
-                        console.log(error)
-                        this.timePassed = 0
-                        this.startTimer()
-                        temparr = []
-                        if (error.response.status == 429) {
-                            this.onTimesUp()
-                        }
-                    })
+
+                    this.saveLocal('myCoinsLocal', this.$root.$myCoins)
 
 
+
+
+
+
+                    this.$parent.$parent._data.showLoader = false
+
+                    this.timePassed = 0
+                    this.startTimer()
+                    temparr = []
+                    this.$parent.get30Days()
+                    console.log("Update loaded complete")
+
+
+
+                };
+
+                update_list()
 
             } else {
                 clearInterval(this.timerInterval)

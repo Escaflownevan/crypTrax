@@ -86,7 +86,7 @@ export default {
             let check = false
             this.$root.$settings.tv.forEach((item) => {
                 if (item == val) {
-                    console.log("Doppelt")
+                    
                     check = true
                 }
             });

@@ -1,8 +1,8 @@
 <template>
 <div id="addCoinsWrapper">
     <h2>Add cryptocurrencys</h2>
-    <multiselect v-model="value" :options="options" :options-limit="3000" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Search cryptocurrencies" label="name" track-by="name">
-        <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} Coins selected</span></template>
+    <multiselect v-model="value" :options="options" :options-limit="3000" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Search cryptocurrencies names" label="name" track-by="name">
+        <template slot="selection" slot-scope="{ values, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} Coins selected</span></template>
         <template slot="option" slot-scope="props"><img class="option__image" :src="''+props.option.logo_url">
             <div class="option__desc"><span class="option__small">#{{ props.option.rank }} - </span><span class="option__title">{{ props.option.name }}</span></div>
         </template>
@@ -24,39 +24,30 @@ export default {
         return {
             options: this.$root.$coins,
             value: [],
-            myCoins: this.$root.$coins,
             boughtCoins: this.$root.$boughtCoins
         }
     },
     methods: {
         actData() {
-
             let el = JSON.parse(JSON.stringify(this.value))
-
             el.forEach((item) => {
                 let flag = true
-
                 if (this.$root.$myCoins != null) {
                     this.$root.$myCoins.forEach((item2) => {
-                        if (item.rank === item2.rank) {
-                            flag = false
-                        }
+                        if (item.rank == item2.rank) {
+                            flag = false                        }
                     })
                 } else {
                     this.$root.$myCoins = []
                 }
 
-
-
-
-
-
                 if (flag) {
 
                     this.$root.$myCoins.push(item)
 
+
                     let obj = {
-                        id: item.id,
+                        symbol: item.symbol,
                         ammount: 0,
                         boughtPrice: 0
                     }

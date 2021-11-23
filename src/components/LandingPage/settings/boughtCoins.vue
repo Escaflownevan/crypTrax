@@ -10,9 +10,9 @@
                 <th scope="col"><span v-if="fiat==='EUR'"> €</span><span v-else> $</span> Price @ Buy</th>
             </tr>
         </thead>
-        <tr class="allBoughtCoins" v-for="item in myCoins" :key="item.id">
+        <tr class="allBoughtCoins" v-for="item in myCoins" :key="item.symbol">
             <td><img :src="''+item.logo_url" height="20px" /></td>
-            <td class="id">{{ item.id }}</td>
+            <td class="symbol">{{ item.symbol }}</td>
             <td class="ammount"><input ref="numberCoins" type="number" value="" /></td>
             <td class="boughtPrice"><input ref="priceBought" type="number" value="" /></td>
         </tr>
@@ -37,7 +37,7 @@ export default {
             this.tempBoughtCoins = []
             this.$root.$myCoins.forEach((item, i) => {
                 let tempObj = {}
-                tempObj.id = item.id
+                tempObj.symbol = item.symbol
                 tempObj.ammount = this.$refs.numberCoins[i].value
                 tempObj.boughtPrice = this.$refs.priceBought[i].value
                 this.tempBoughtCoins.push(tempObj)
@@ -52,7 +52,7 @@ export default {
         document.querySelectorAll('.allBoughtCoins').forEach(function(item) {
             this2.$root.$boughtCoins.forEach((item2) => {
 
-                if (item.querySelectorAll('.id')[0].innerHTML === item2.id) {
+                if (item.querySelectorAll('.symbol')[0].innerHTML === item2.symbol) {
                     item.querySelectorAll('.ammount')[0].children[0].value = item2.ammount
                     item.querySelectorAll('.boughtPrice')[0].children[0].value = item2.boughtPrice
                 }

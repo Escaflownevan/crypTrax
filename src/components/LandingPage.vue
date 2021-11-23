@@ -2,21 +2,25 @@
 <div id="wrapper" v-if="childDataLoaded">
 
     <countDown></countDown>
+    <div v-if="this.globMarket.length!=0 && this.capPercentETH !=0" class="globalNews">
+        <p>Global MarketCap: <strong>{{this.globMarket}}<span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></p>
+        <p>Flippening: <strong>BTC {{this.capPercentBTC}} % - ETH {{this.capPercentETH}} %</strong></p>
+    </div>
     <div class="switchHolder">
-        <i title="Listen Ansicht" class="fas fa-th-list ansichtListe"></i>
+        <i title="Crypto list view" class="fas fa-th-list ansichtListe"></i>
         <label class="switch" @click="changeView(isToggled)">
 
             <input type="checkbox" v-model="isToggled" :checked="isToggled">
             <span class="slider round"></span>
 
         </label>
-        <i title="Tradingview Ansicht" class="fas fa-th-large ansichtTV"></i>
+        <i title="Tradingview multi window" class="fas fa-th-large ansichtTV"></i>
     </div>
     <coinsList v-if="!isToggled" :key="componentKey"></coinsList>
 
     <blockList v-if="isToggled"></blockList>
     <settings></settings>
-    <a v-show="this.$root.$settings.btcecho" id="BTCEchoIcon" class="echo-icon" target="_blank" title="News: BTC-ECHO.de" href="https://www.btc-echo.de/"><img src="https://www.btc-echo.de/favicon.ico" height="40px" width="40px" /></a>
+    <a v-show="this.$root.$settings.btcecho" id="BTCEchoIcon" class="echo-icon" target="_blank" title="News: BTC-ECHO.de" href="https://www.btc-echo.de/"><img :src="require(`../assets/favicon_be.png`)" height="40px" width="40px" /></a>
 
 
 
@@ -26,11 +30,10 @@
 <script>
 import coinsList from './LandingPage/coinsList'
 import countDown from './LandingPage/countDown'
-import settings from './LandingPage/settings'
+import settings from './LandingPage/settingsMain'
 import blockList from './LandingPage/blockList'
-import axios from 'axios'
-import axiosRetry from 'axios-retry'
-
+const CoinGecko = require('coingecko-api');
+const CoinGeckoClient = new CoinGecko();
 
 export default {
     name: 'landing-page',
@@ -48,67 +51,117 @@ export default {
             componentKey2: 0,
             categories: ['Logo', 'Name', 'Rang', 'Preis', '1 Std', '1 Tag', '7 Tage', 'Cap', 'Wert', 'Profit/Loss', 'ATH', '30 Tage', 'Löschen'],
             isToggled: this.$root.$settings.blockView,
-            tempArray: [],
             splitArray: [],
-            countCircle: 0
+            countCircle: 1,
+            maxCoins: 12, // 12 * 250 = 3000 Top of Cryptocurrencies
+            coinsCounter: 0,
+            globMarket: "",
+            capPercentBTC: 0,
+            capPercentETH: 0
         }
     },
 
     methods: {
         get30Days() {
 
-            let pattern = this.$root.$myCoins
-            let cash = this.$root.$settings.fiat
-            let current = new Date();
-            let startDate = new Date(new Date().setDate(current.getDate() - 30)).toISOString().split('T')[0]
-            let endDate = new Date().toISOString().split('T')[0]
-            if (pattern.length != 0) {
+            var get_30 = async () => {
+                let temparr = []
+                let timeIn
+                if (this.$root.$myCoins[this.coinsCounter].days30 == undefined) {
+                    timeIn = 0
+                } else {
+                    timeIn = this.$root.$myCoins[this.coinsCounter].days30.timestamp
+                }
 
-
-
-
-                let ids = ""
-                pattern.forEach((item, i) => {
-                    ids += item.id
-                    if (i !== pattern.length - 1) {
-                        ids += ','
-                    }
-                })
-
-                let link = 'https://api.nomics.com/v1/currencies/sparkline?key=' + this.$root.$settings.nomics_api + '&ids=' + ids + '&start=' + startDate + 'T00%3A00%3A00Z&end=' + endDate + 'T00%3A00%3A00Z&convert=' + cash
-
-                axiosRetry(axios, {
-                    retries: Infinity,
-                    retryDelay: (retryCount) => {
-                        console.log(`retry attempt: ${retryCount}`);
-                        this.$parent._data.restartTimer = retryCount * 4000 / 1000
-                        return retryCount * 4000; // time interval between retries
-                    }
-                });
-
-                this.$axios.get(link).then(response2 => {
-
-                        pattern.forEach((item) => {
-                            response2.data.forEach((item2) => {
-                                if (item.id == item2.currency) {
-                                    item["days30"] = item2.prices
-                                }
-                            })
+                if (timeIn < (Date.now() - 86400000)) {    //Update 30 Days prices for sparklines only every 24 hours
+                    let data
+                    try {
+                        data = await CoinGeckoClient.coins.fetchMarketChart(this.$root.$myCoins[this.coinsCounter].id, {
+                            vs_currency: this.$root.$settings.fiat,
+                            days: "30",
+                            interval: "daily"
                         })
+                    } catch (e) {
+                        console.log(e)
+                        this.$children[0].timePassed = 0
+                        this.$children[0].startTimer()
+                        console.log("ERROR RESTART 30Days")
+                    }
 
-                        this.saveLocal('myCoinsLocal', pattern)
-                        this.$root.$myCoins = pattern
-                        this.forceRerender()
+
+
+                    data.data.prices.forEach((item) => {
+                        let flag = true
+                        let price = String(item[1])
+                        if (price.indexOf('.') > -1) {
+                            let a = price.slice(price.indexOf('.') + 1, price.length)
+                            for (let i = 0; i < a.length; i++) {
+                                if (a.charAt(i) !== '0' && flag) {
+                                    temparr.push(price.slice(0, price.indexOf('.') + i + 3))
+                                    flag = false
+                                }
+                            }
+                        } else {
+                            temparr.push(item[1])
+                        }
+                    });
+                    Object.assign(this.$root.$myCoins[this.coinsCounter], {
+                        "days30": {
+                            "prices": temparr,
+                            "timestamp": Date.now()
+                        }
                     })
-                    .catch(error => {
-                        console.log(error)
 
-                        this.forceRerender()
-                    })
+                }
 
+                if (this.coinsCounter == this.$root.$myCoins.length - 1) {
+                    this.saveLocal('myCoinsLocal', this.$root.$myCoins)
 
+                    this.coinsCounter = 0
+                    let this2 = this
+                    var load_global = async () => {
+                        let data
+                        try {
+                              data = await CoinGeckoClient.global()
+                        } catch (e) {
+                            console.log(e)
+                            this.$children[0].timePassed = 0
+                            this.$children[0].startTimer()
+                            console.log("ERROR RESTART GLOBAL")
+                        }
 
+                        let obj = data.data.data
+                        Object.keys(obj.total_market_cap).map(function(k) {
+                            if (k == this2.$root.$settings.fiat.toLowerCase()) {
+                                let num = obj.total_market_cap[k]
+                                if (Math.abs(Number(num)) >= 1.0e+12) {
+                                    num = (Math.abs(Number(num)) / 1.0e+12).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Bil" : " Tril")
+                                }
+                                if (Math.abs(Number(num)) >= 1.0e+9) {
+                                    num = (Math.abs(Number(num)) / 1.0e+9).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Mil" : " Bil")
+                                }
+
+                                this2.globMarket = num
+                            }
+                        })
+                        Object.keys(obj.market_cap_percentage).map(function(k) {
+                            if (k == "btc") {
+                                this2.capPercentBTC = obj.market_cap_percentage[k].toFixed(2)
+                            }
+                            if (k == "eth") {
+                                this2.capPercentETH = obj.market_cap_percentage[k].toFixed(2)
+                            }
+                        })
+                    }
+                    load_global()
+
+                    this.forceRerender()
+                } else {
+                    this.coinsCounter++
+                    get_30()
+                }
             }
+            get_30()
 
         },
         forceRerender() {
@@ -116,18 +169,26 @@ export default {
         },
         changeView(view) {
             this.$root.$settings.blockView = !view
-            this.colorCheck()
+
+                this.colorCheck()
+
+
             this.saveLocal('settings', this.$root.$settings)
 
         },
         colorCheck() {
-            if (this.$root.$settings.blockView) {
-                document.querySelector(".ansichtTV").classList.add("ansichtAktiv")
-                document.querySelector(".ansichtListe").classList.remove("ansichtAktiv")
-            } else {
-                document.querySelector(".ansichtListe").classList.add("ansichtAktiv")
-                document.querySelector(".ansichtTV").classList.remove("ansichtAktiv")
+            try {
+                if (this.$root.$settings.blockView) {
+                    document.querySelector(".ansichtTV").classList.add("ansichtAktiv")
+                    document.querySelector(".ansichtListe").classList.remove("ansichtAktiv")
+                } else {
+                    document.querySelector(".ansichtListe").classList.add("ansichtAktiv")
+                    document.querySelector(".ansichtTV").classList.remove("ansichtAktiv")
+                }
+            } catch (e) {
+                console.log(e)
             }
+
         },
         loadTV() {
             if (this.$root.$settings.tv.length != 0) {
@@ -142,132 +203,72 @@ export default {
                 document.getElementById("holderIframes").innerHTML = '<h1>Please add currency via menu -> Tradingview</h1> <i  class="fa fa-arrow-right noListArrow"></i>'
 
             }
-            console.log("TV loaded")
+            
         },
         getApiData() {
-
             if (this.loadLocal('allCoinsDate') < (Date.now() - 864000000)) { //check ever 10 Days for new Coins
-
-                axiosRetry(axios, {
-                    retries: Infinity,
-                    retryDelay: (retryCount) => {
-                        console.log(`retry attempt: ${retryCount}`);
-                        this.$parent._data.restartTimer = retryCount * 4000 / 1000
-                        return retryCount * 4000; // time interval between retries
-                    }
-                });
-
                 this.$root.$coins = []
-                this.$axios
-                    .get('https://api.nomics.com/v1/prices?key=' + this.$root.$settings.nomics_api)
-                    .then(response => {
-                        response.data.forEach((element) => {
-                            this.tempArray.push(element.currency)
-                        })
+                this.$parent._data.totalCounter = this.maxCoins
 
-                        let chuckSize = 500
-                        let tempLength = Math.ceil(this.tempArray.length / chuckSize)
-                        /* eslint-disable-next-line */
-                        this.splitArray = new Array(tempLength).fill().map(_ => this.tempArray.splice(0, chuckSize))
-                        let this2 = this
-                        setTimeout(function() {
-                            this2.getCoinsDetails()
-                        }, 1000);
+                var load_list = async () => {
+                    console.log("Durchläufe: " + this.countCircle + " / " + this.maxCoins)
+                    this.$parent._data.counter = this.countCircle - 1
 
-                    })
-                    .catch(error => {
-                        console.log(error)
-                        if (error.response.status == 429) {
-                            this.getApiData()
+                    let data = await CoinGeckoClient.coins.markets({
+                        per_page: 250,
+                        page: this.countCircle,
+                        localization: false,
+                        vs_currency: this.$root.$settings.fiat
+                    });
+
+                    data.data.forEach((item) => {
+                        let d = {
+                            "id": item.id,
+                            "name": item.name,
+                            "symbol": item.symbol.toUpperCase(),
+                            "logo_url": item.image,
+                            "rank": item.market_cap_rank.toString()
                         }
-
+                        this.$root.$coins.push(d)
                     })
-            } else {
-                this.$root.$coins = this.loadLocal('allCoinsLocal')
-                this.childDataLoaded = true
-                this.$parent._data.showLoader = false
-
-                console.log('Old all $coins wurden geladen von cookie')
-            }
-        },
-        getCoinsDetails() {
-
-            console.log("Durchläufe: " + this.countCircle + " / " + this.splitArray.length)
-            this.$parent._data.counter = this.countCircle
-            this.$parent._data.totalCounter = this.splitArray.length
-            axiosRetry(axios, {
-                retries: Infinity,
-
-                retryDelay: (retryCount) => {
-                    console.log(`retry attempt: ${retryCount}`);
-                    this.$parent._data.restartTimer = retryCount * 4000 / 1000
-                    return retryCount * 4000; // time interval between retries
-                }
-            });
-            let currencies = this.splitArray[this.countCircle].join()
-            this.$axios
-                .get('https://api.nomics.com/v1/currencies/ticker?key=' + this.$root.$settings.nomics_api + '&ids=' + currencies + '&convert=' + this.$root.$settings.fiat).then(response => {
-                    response.data.forEach((item) => {
-
-                        if (item.rank < 3000) {
-                            let d = {
-                                "id": item.id,
-                                "name": item.name,
-                                "logo_url": item.logo_url,
-                                "rank": item.rank,
-                                "price": item.price,
-                                "market_cap": item.market_cap,
-                                "high": item.high,
-                                "1h": item["1h"],
-                                "1d": item["1d"],
-                                "7d": item["7d"]
-                            }
-                            this.$root.$coins.push(d)
-                            //this.$root.$coins[i].push(item.logo_url)
-                            //this.$root.$coins[i].push(item.name)
-                        }
-
-                    })
-                    if (this.countCircle === (this.splitArray.length - 1)) {
-
+                    if (this.maxCoins == this.countCircle) {
                         this.$root.$coins.sort((a, b) => (parseInt(a.rank) > parseInt(b.rank)) ? 1 : ((parseInt(b.rank) > parseInt(a.rank)) ? -1 : 0))
                         this.childDataLoaded = true
                         this.$parent._data.showLoader = false
                         this.saveLocal('allCoinsDate', Date.now())
                         this.countCircle = 0
+
                         this.saveLocal('allCoinsLocal', this.$root.$coins)
 
                     } else {
-                        let this2 = this;
-                        setTimeout(function() {
-                            this2.countCircle++
-                            this2.getCoinsDetails()
-                        }, 1000);
-
+                        this.countCircle++
+                        this.forceRerender()
+                        load_list()
                     }
 
-                })
-                .catch(error => {
-                    this.$parent._data.error = error
-                    console.log(error)
-                })
+                };
+                load_list()
 
+            } else {
+                this.$root.$coins = this.loadLocal('allCoinsLocal')
+                this.childDataLoaded = true
+                this.$parent._data.showLoader = false
+                console.log('Old all $coins wurden geladen von cookie')
+            }
         }
     },
     mounted() {
-
         let this2 = this
         setTimeout(function() {
-
             this2.forceRerender()
             this2.colorCheck()
         }, 500)
-
     }
 }
 </script>
 
 <style>
+
 .ansichtAktiv {
     color: #ff9400fc !important
 }
@@ -475,5 +476,16 @@ input:checked+.slider:before {
     position: absolute;
     top: 23px;
     left: 125px;
+}
+
+.globalNews {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    text-align: center;
 }
 </style>

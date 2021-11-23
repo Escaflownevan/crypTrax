@@ -1,8 +1,8 @@
 <template>
 <div>
-    <h2>Spalten ausblenden</h2>
+    <h2>Hide columns</h2>
     <ul>
-        <li v-for="(item, index) in this.$root.$settings.view" :key="item.id">
+        <li v-for="(item, index) in this.$root.$settings.view" :key="item.symbol">
             <input type="checkbox" :name="item.name" :checked="item.view" @change="changeView(index, $event.target.checked)" /><label :for="item.name"> {{ item.name }}</label>
 
         </li>
@@ -60,5 +60,6 @@ label{
 }
 input{
   transform: scale(1.5);
+  filter: invert(100%);
 }
 </style>
