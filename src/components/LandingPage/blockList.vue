@@ -1,9 +1,5 @@
 <template>
 <div id="holderIframes" class="section group">
-
-
-
-
 </div>
 </template>
 
@@ -13,11 +9,10 @@ export default {
     data() {
         return {
             settings: this.$root.$settings
-
         }
     },
     mounted() {
-        this.$parent.loadTV()
+        this.$parent.loadTV();
     }
 }
 </script>
@@ -45,6 +40,7 @@ h1{
     color: #ff9400fc;
     font-size: 40px;
 }
+
 @keyframes bounceRight {
   0%,
   20%,
@@ -63,46 +59,61 @@ h1{
     transform: translateX(-15px);
   }
 }
-/* /right bounce */
 
-
-/* assign bounce */
 .fa-arrow-right {
   -webkit-animation: bounceRight 2s infinite;
   animation: bounceRight 2s infinite;
   float:right;
 }
+
 iframe{
   width: 100%;
   height: 400px;
 }
+
 .section {
 	clear: both;
 	padding: 0px;
 	margin: 0px;
 }
 
-/*  COLUMN SETUP  */
 .col {
 	display: block;
 	float:left;
 	margin: 1% 0 1% 1.6%;
 }
 
-.col:nth-child(odd) { margin-left: 0; }
-.col:nth-child(even) { padding-right: 15px; }
-/*  GROUPING  */
+.col:nth-child(odd) {
+    margin-left: 0;
+}
+
+.col:nth-child(even) {
+    padding-right: 15px;
+}
+
 .group:before,
-.group:after { content:""; display:table; }
-.group:after { clear:both;}
-.group { zoom:1; /* For IE 6/7 */ }
+.group:after {
+    content:"";
+    display:table;
+}
+.group:after {
+    clear:both;
+}
+.group {
+zoom:1; /* For IE 6/7 */
+}
 
+.span_1_of_3 {
+    width: 49%;
+}
 
-.span_1_of_3 { width: 49%; }
-
-/*  GO FULL WIDTH BELOW 480 PIXELS */
 @media only screen and (max-width: 600px) {
-	.col {  margin: 1% 0 1% 0%; }
-	.span_1_of_3 { width: 100%; }
+	.col {
+        margin: 1% 0 1% 0%;
+    }
+
+	.span_1_of_3 {
+        width: 100%;
+    }
 }
 </style>

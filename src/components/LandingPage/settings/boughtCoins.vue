@@ -34,36 +34,36 @@ export default {
     },
     methods: {
         save() {
-            this.tempBoughtCoins = []
+            this.tempBoughtCoins = [];
             this.$root.$myCoins.forEach((item, i) => {
-                let tempObj = {}
-                tempObj.symbol = item.symbol
-                tempObj.ammount = this.$refs.numberCoins[i].value
-                tempObj.boughtPrice = this.$refs.priceBought[i].value
-                this.tempBoughtCoins.push(tempObj)
+                let tempObj = {};
+                tempObj.symbol = item.symbol;
+                tempObj.ammount = this.$refs.numberCoins[i].value;
+                tempObj.boughtPrice = this.$refs.priceBought[i].value;
+                this.tempBoughtCoins.push(tempObj);
             })
-            this.$parent.$parent.forceRerender()
-            this.$root.$boughtCoins = this.tempBoughtCoins
-            this.saveLocal('boughtCoins', this.tempBoughtCoins)
+            this.$parent.$parent.forceRerender();
+            this.$root.$boughtCoins = this.tempBoughtCoins;
+            this.saveLocal('boughtCoins', this.tempBoughtCoins);
         }
     },
     mounted() {
-        let this2 = this
+        let this2 = this;
         document.querySelectorAll('.allBoughtCoins').forEach(function(item) {
             this2.$root.$boughtCoins.forEach((item2) => {
-
                 if (item.querySelectorAll('.symbol')[0].innerHTML === item2.symbol) {
-                    item.querySelectorAll('.ammount')[0].children[0].value = item2.ammount
-                    item.querySelectorAll('.boughtPrice')[0].children[0].value = item2.boughtPrice
+                    item.querySelectorAll('.ammount')[0].children[0].value = item2.ammount;
+                    item.querySelectorAll('.boughtPrice')[0].children[0].value = item2.boughtPrice;
                 }
-            })
-        })
-        this.save()
+            });
+        });
+        this.save();
     }
 }
 </script>
 
 <style lang="scss" scoped>
+
 $baseColor: #565753;
 $borderRadius: 10px;
 $imageBig: 100px;
@@ -76,13 +76,16 @@ table {
     border-radius: $borderRadius;
     margin: 10px 0;
     max-width: 740px;
+
     input {
         width: 100px;
         text-align: center;
     }
+
     button {
         margin-top: 10px;
     }
+    
     td,
     th {
         color: darken($baseColor, 10%);

@@ -1,12 +1,10 @@
 <template>
 <div id="app">
     <div v-if="showLoader" id="loaderFrame">
-
         <h1>Top 3000 Cryptocurrencies are loading by coingeko.com</h1>
-        <span>This can take a few minutes...</span>
+        <span>This can take a few minutes...<br><br></span>
+        <span>Repeat every 10 days to check for new coins</span>
         <div class="loader">
-
-
             <div class="chart">
                 <div class="bar bar-0 red">
                     <div class="face top">
@@ -25,19 +23,15 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
         <h2><strong>{{showPercent()}} %</strong></h2>
-
     </div>
-
     <LandingPage></LandingPage>
 </div>
 </template>
 
 <script>
-import LandingPage from './components/LandingPage'
+import LandingPage from './components/LandingPage';
 
 export default {
     name: 'coinsMain',
@@ -53,11 +47,8 @@ export default {
         }
     },
     created() {
-        
-
         if (this.loadLocal('settings')) {
-            this.$root.$settings = this.loadLocal('settings')
-
+            this.$root.$settings = this.loadLocal('settings');
         } else {
             this.$root.$settings = {
                 blockView: false,
@@ -125,65 +116,55 @@ export default {
         }
 
         const plugin = document.createElement("script");
-        plugin.setAttribute(
-            "src",
-            "https://s3.tradingview.com/tv.js"
-        );
+        plugin.setAttribute( "src", "https://s3.tradingview.com/tv.js");
         plugin.async = true;
         document.head.appendChild(plugin);
 
-
-
         if (this.loadLocal('boughtCoins')) {
-            this.$root.$boughtCoins = this.loadLocal('boughtCoins')
+            this.$root.$boughtCoins = this.loadLocal('boughtCoins');
         } else {
-            this.$root.$boughtCoins = []
+            this.$root.$boughtCoins = [];
         }
-
 
         if (this.loadLocal('myCoinsLocal')) {
-            this.$root.$myCoins = this.loadLocal('myCoinsLocal')
+            this.$root.$myCoins = this.loadLocal('myCoinsLocal');
         } else {
-            this.$root.$myCoins = []
-        }
-        if (this.loadLocal('allCoinsLocal')) {
-            this.$root.$coins = this.loadLocal('allCoinsLocal')
-        } else {
-            this.$root.$coins = []
+            this.$root.$myCoins = [];
         }
 
+        if (this.loadLocal('allCoinsLocal')) {
+            this.$root.$coins = this.loadLocal('allCoinsLocal');
+        } else {
+            this.$root.$coins = [];
+        }
     },
     mounted() {
-
-            this.$children[0].getApiData()
-
+        this.$children[0].getApiData();
     },
     methods: {
         showPercent() {
             if (this.counter == 0) {
-                return 0
+                return 0;
             } else {
-                return parseFloat((((this.counter * 500) / (this.totalCounter * 500)) * 100)).toFixed(0)
+                return parseFloat((((this.counter * 500) / (this.totalCounter * 500)) * 100)).toFixed(0);
             }
-
         }
     },
     watch: {
         counter: {
             handler() {
-                let percent = (this.counter / this.totalCounter).toFixed(2)
-                let bar = document.querySelector(".chart .bar")
+                let percent = (this.counter / this.totalCounter).toFixed(2);
+                let bar = document.querySelector(".chart .bar");
                 bar.classList.forEach((item) => {
                     if (item.indexOf("bar-") > -1) {
-                        bar.classList.remove(item)
+                        bar.classList.remove(item);
                     }
-                })
+                });
 
                 if (percent.slice(2, 4) < 10) {
-
-                    bar.classList.add("bar-" + percent.slice(3, 4))
+                    bar.classList.add("bar-" + percent.slice(3, 4));
                 }
-                bar.classList.add("bar-" + percent.slice(2, 4))
+                bar.classList.add("bar-" + percent.slice(2, 4));
             }
         }
     }
@@ -198,16 +179,12 @@ h2 {
 }
 
 #loaderFrame {
-
     text-align: center;
-
 }
 
 .loader {
-
     width: 50%;
     height: 120px;
-    /*animation: spin 2s linear infinite;*/
     margin: 20px auto 100px;
 }
 
@@ -219,7 +196,6 @@ $red: #ff9400fc;
 $white: #fefefe;
 $gray: #444;
 $lightGray: lighten($gray, 30);
-
 $transitionDuration: 0.3s;
 $transition: all $transitionDuration ease-in-out;
 
@@ -228,31 +204,34 @@ body {
     font-size: 16px;
     font-weight: 300;
     line-height: 1em;
-
     text-align: center;
-
     color: $gray;
     background: #d0d0d0;
 }
+
 h1:not(.extra) {
     font-size: 4vw;
     margin-left: 50px;
     margin-right: 50px;
     margin-bottom: 4vw;
 }
+
 h2 {
     margin-bottom: 3em;
 }
-em,
-strong {
+
+em, strong {
     font-weight: 700;
 }
+
 input {
     display: none;
 }
+
 header p {
     margin-bottom: 0;
 }
+
 section {
     display: flex;
     justify-content: center;
@@ -272,6 +251,7 @@ section {
         }
     }
 }
+
 p {
     margin: auto;
 
@@ -279,6 +259,7 @@ p {
         display: block;
     }
 }
+
 .container {
     z-index: 1;
     display: flex;
@@ -290,16 +271,8 @@ p {
     margin-bottom: 4em;
 }
 
-/*
-*
-*
-START // CHART'S RULES
- -> "if you're picking code, don't forget the variables :)"
-*/
-
 .chart {
     font-size: 1em;
-
     perspective: 1000px;
     perspective-origin: 50% 50%;
     backface-visibility: visible;
@@ -310,26 +283,17 @@ $growColor: rgba($red, .6);
 
 .bar {
     font-size: 1em;
-
     position: relative;
-
     height: 10em;
-
     transition: $transition;
     transform: rotateX(60deg) rotateY(0deg);
-
     transform-style: preserve-3d;
-
     .face {
         font-size: 2em;
-
         position: relative;
-
         width: 100%;
         height: 2em;
-
         background-color: $faceColor;
-
         &.side-a,
         &.side-b {
             width: 2em;
@@ -393,7 +357,6 @@ $growColor: rgba($red, .6);
 @include drawSkin($lime, 'lime');
 @include drawSkin($white, 'white');
 @include drawSkin($gray, 'gray');
-
 @include drawFaces(rgba($yellow, .6), 'yellow-face');
 @include drawFaces($lime, 'lime-face');
 @include drawFaces(rgba($red, .6), 'red-face');
@@ -410,17 +373,10 @@ $growColor: rgba($red, .6);
     }
 }
 
-/*
-END // CHART'S RULES
-*
-*
-*/
-
 .chart.grid {
     display: flex;
     flex-direction: row;
     .exercise {
-
         flex: 0 0 100%;
         display: flex;
         .bar {
@@ -443,34 +399,28 @@ END // CHART'S RULES
 
 .actions {
     display: flex;
-
     justify-content: center;
-
     margin-bottom: 0;
     padding-bottom: 2em;
     border-bottom: 1px dotted rgba($gray, .4);
 }
+
 label {
     box-sizing: border-box;
     padding: 1em;
     margin: 0 0.2em;
-
     cursor: pointer;
     transition: all 0.15s ease-in-out;
-
     color: $navy;
     border: 1px solid rgba($white, .6);
     border-radius: 0;
-
     flex: 1;
     &:first-child {
         margin-left: 0;
-
         border-radius: 0.2em 0 0 0.2em;
     }
     &:last-child {
         margin-right: 0;
-
         border-radius: 0 0.2em 0.2em 0;
     }
 }
@@ -494,9 +444,11 @@ input[id='lime']:checked ~ .actions label[for='lime'] {
 input[id='red']:checked ~ .chart {
     @extend .red;
 }
+
 input[id='cyan']:checked ~ .chart {
     @extend .cyan;
 }
+
 input[id='lime']:checked ~ .chart {
     @extend .lime;
 }
@@ -504,15 +456,19 @@ input[id='lime']:checked ~ .chart {
 input[id='pos-0']:checked ~ .chart {
     @extend .bar-25;
 }
+
 input[id='pos-1']:checked ~ .chart {
     @extend .bar-50;
 }
+
 input[id='pos-2']:checked ~ .chart {
     @extend .bar-75;
 }
+
 input[id='pos-3']:checked ~ .chart {
     @extend .bar-100;
 }
+
 input[id='exercise-2']:checked ~ .chart.grid {
     .exercise .bar {
         &:nth-child(1) {
@@ -529,6 +485,7 @@ input[id='exercise-2']:checked ~ .chart.grid {
         }
     }
 }
+
 input[id='exercise-3']:checked ~ .chart.grid {
     .exercise .bar {
         &:nth-child(1),
@@ -539,6 +496,7 @@ input[id='exercise-3']:checked ~ .chart.grid {
         }
     }
 }
+
 input[id='exercise-4']:checked ~ .chart.grid {
     .exercise .bar {
         &:nth-child(1),
@@ -551,63 +509,5 @@ input[id='exercise-4']:checked ~ .chart.grid {
             @extend .bar-100;
         }
     }
-}
-
-#nomicsInput {
-    z-index: 9999;
-    margin-bottom: 100px;
-
-    background-color: #454552;
-    text-align: center;
-}
-#nomicsInput button {
-    margin-top: 20px!important;
-    display: block;
-    margin: 0 auto;
-}
-
-#nomicsInput p {
-    color: white;
-    margin-bottom: 10px;
-}
-#nomicsInput a {
-    color: #ff9400fc;
-}
-#nomicsInput input {
-    display: block;
-    line-height: 30px;
-    border: solid white;
-    border-radius: 5px;
-    background: #fff;
-    width: 50%;
-    margin: 0 auto;
-    text-align: center;
-}
-.apiTutorial {
-    width: 80vw;
-    margin: 40px auto 0;
-}
-.apiTutorial img {
-    width: 100%;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-.apiTutorial p {
-    color: black!important;
-}
-.apiTutorial span {
-    color: white;
-}
-.infoP {
-    font-size: 18px;
-    margin-top: 10px;
-    margin-bottom: 40px!important;
-}
-.extra {
-    color: #ff9400fc;
-    margin-bottom: 80px;
-}
-.extra2 {
-    margin-bottom: 20px!important;
 }
 </style>

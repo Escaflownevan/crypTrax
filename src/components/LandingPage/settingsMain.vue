@@ -61,19 +61,13 @@
             <div v-if="!settingsCat.isHiddenTimer">
                 <h2>Timer & Co</h2>
                 <div class="spacerCard">
-
                     <input id="showTimer" class="sonstigesInput" @change="timerChange" type="checkbox" name="showTimer" :checked="timer" /><label v-if="!settingsCat.isHiddenTimer" for="showTimer"> Show update countdown</label>
-
                 </div>
                 <div class="spacerCard">
-
                     <input class="sonstigesInput" @change="BTCEChange" type="checkbox" name="showBTCEcho" :checked="btcecho" /><label v-if="!settingsCat.isHiddenTimer" for="showBTCEcho"> Show BTC-Echo.de link</label>
-
                 </div>
                 <div class="spacerCard">
-
                     <input class="sonstigesInput" @change="cmcChange" type="checkbox" name="showCMCIcon" :checked="cg_logo" /><label v-if="!settingsCat.isHiddenTimer" for="showCMCIcon"> Show the Coingecko.com logo next to the currency name</label>
-
                 </div>
             </div>
             <boughtCoins v-if="!settingsCat.isHiddenBoughtCoins" :key="update"></boughtCoins>
@@ -89,11 +83,11 @@
 </template>
 
 <script>
-import addCoin from './settings/addCoin'
-import boughtCoins from './settings/boughtCoins'
-import toggleView from './settings/toggleView'
-import tradingView from './settings/tradingView'
-import Multiselect from 'vue-multiselect'
+import addCoin from './settings/addCoin';
+import boughtCoins from './settings/boughtCoins';
+import toggleView from './settings/toggleView';
+import tradingView from './settings/tradingView';
+import Multiselect from 'vue-multiselect';
 export default {
     name: 'settingsMain',
     data() {
@@ -126,71 +120,69 @@ export default {
     methods: {
         timerCheck() {
             if (this.timer) {
-                return true
+                return true;
             } else {
-                return false
+                return false;
             }
         },
         hideOthers(notHide) {
             Object.keys(this.settingsCat).forEach((item) => {
                 if (item !== notHide) {
-                    this.settingsCat[item] = true
+                    this.settingsCat[item] = true;
                 } else {
-                    this.settingsCat[item] = false
+                    this.settingsCat[item] = false;
                 }
-            })
+            });
 
         },
         forceRerender() {
-            this.update += 1
+            this.update += 1;
         },
         myFunction() {
-            document.getElementById('burgerMenu').classList.toggle('change')
+            document.getElementById('burgerMenu').classList.toggle('change');
         },
         newFiat() {
-            this.$root.$settings.fiat = this.value
-            this.saveLocal('settings', this.$root.$settings)
-            this.$parent.$children[0].onTimesUp()
+            this.$root.$settings.fiat = this.value;
+            this.saveLocal('settings', this.$root.$settings);
+            this.$parent.$children[0].onTimesUp();
         },
         BTCEChange() {
-
-            var yourUl = document.getElementById('BTCEchoIcon')
-            yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none'
+            var yourUl = document.getElementById('BTCEchoIcon');
+            yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none';
             if (this.$root.$settings.btcecho) {
-                this.$root.$settings.btcecho = false
+                this.$root.$settings.btcecho = false;
             } else {
-                this.$root.$settings.btcecho = true
+                this.$root.$settings.btcecho = true;
             }
-            this.saveLocal('settings', this.$root.$settings)
+            this.saveLocal('settings', this.$root.$settings);
         },
         cmcChange() {
             document.querySelectorAll(".cmc-icon").forEach(yourUl => {
-                yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none'
+                yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none';
             });
-
             if (this.$root.$settings.cg_logo) {
-                this.$root.$settings.cg_logo = false
+                this.$root.$settings.cg_logo = false;
             } else {
-                this.$root.$settings.cg_logo = true
+                this.$root.$settings.cg_logo = true;
             }
-            this.saveLocal('settings', this.$root.$settings)
+            this.saveLocal('settings', this.$root.$settings);
         },
         timerChange() {
-            var yourUl = document.querySelector(".base-timer")
-            yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none'
+            var yourUl = document.querySelector(".base-timer");
+            yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none';
             if (this.$root.$settings.timer) {
-                this.$root.$settings.timer = false
+                this.$root.$settings.timer = false;
             } else {
-                this.$root.$settings.timer = true
+                this.$root.$settings.timer = true;
             }
-            this.saveLocal('settings', this.$root.$settings)
+            this.saveLocal('settings', this.$root.$settings);
         }
     },
     mounted() {
         if (this.timer) {
-            this.$parent.$children[0].$el.style.display = 'block'
+            this.$parent.$children[0].$el.style.display = 'block';
         } else {
-            this.$parent.$children[0].$el.style.display = 'none'
+            this.$parent.$children[0].$el.style.display = 'none';
         }
     }
 }
@@ -204,8 +196,6 @@ export default {
     display: inline-block;
     cursor: pointer;
 }
-
-
 
 .bar1,
 .bar2,
@@ -270,7 +260,6 @@ li {
     list-style: none;
     padding-top: 10px;
     padding-bottom: 10px;
-
 }
 
 .card {

@@ -8,12 +8,11 @@
         </template>
     </multiselect>
     <button @click="actData">Add Coins</button>
-
 </div>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
+import Multiselect from 'vue-multiselect';
 
 export default {
     name: 'addCoin',
@@ -29,84 +28,69 @@ export default {
     },
     methods: {
         actData() {
-            let el = JSON.parse(JSON.stringify(this.value))
+            let el = JSON.parse(JSON.stringify(this.value));
             el.forEach((item) => {
-                let flag = true
+                let flag = true;
                 if (this.$root.$myCoins != null) {
                     this.$root.$myCoins.forEach((item2) => {
                         if (item.rank == item2.rank) {
-                            flag = false                        }
-                    })
+                            flag = false;
+                        }
+                    });
                 } else {
-                    this.$root.$myCoins = []
+                    this.$root.$myCoins = [];
                 }
 
                 if (flag) {
-
-                    this.$root.$myCoins.push(item)
-
-
+                    this.$root.$myCoins.push(item);
                     let obj = {
                         symbol: item.symbol,
                         ammount: 0,
                         boughtPrice: 0
-                    }
-
-                    this.$root.$boughtCoins.push(obj)
-
-                    this.saveLocal('boughtCoins', this.$root.$boughtCoins)
+                    };
+                    this.$root.$boughtCoins.push(obj);
+                    this.saveLocal('boughtCoins', this.$root.$boughtCoins);
                 }
-            })
-
-            this.saveLocal('myCoinsLocal', this.$root.$myCoins)
-
-            this.value = []
+            });
+            this.saveLocal('myCoinsLocal', this.$root.$myCoins);
+            this.value = [];
 
             try {
-                clearInterval(this.$parent.$parent.$children[0].timerInterval)
-                this.$parent.$parent.$children[0].timePassed = 0
-                this.$parent.$parent.$children[0].onTimesUp()
+                clearInterval(this.$parent.$parent.$children[0].timerInterval);
+                this.$parent.$parent.$children[0].timePassed = 0;
+                this.$parent.$parent.$children[0].onTimesUp();
             } catch (e) {
-                //console.log(e)
+                //console.log(e);
             }
 
             try {
-                clearInterval(this.$parent.$parent.$children[1].timerInterval)
-                this.$parent.$parent.$children[1].timePassed = 0
-                this.$parent.$parent.$children[1].onTimesUp()
+                clearInterval(this.$parent.$parent.$children[1].timerInterval);
+                this.$parent.$parent.$children[1].timePassed = 0;
+                this.$parent.$parent.$children[1].onTimesUp();
             } catch (e) {
-                //console.log(e)
+                //console.log(e);
             }
 
             try {
-
-                clearInterval(this.$parent.$parent.$children[2].timerInterval)
-                this.$parent.$parent.$children[2].timePassed = 0
-                this.$parent.$parent.$children[2].onTimesUp()
+                clearInterval(this.$parent.$parent.$children[2].timerInterval);
+                this.$parent.$parent.$children[2].timePassed = 0;
+                this.$parent.$parent.$children[2].onTimesUp();
             } catch (e) {
-                //console.log(e)
+                //console.log(e);
             }
-
-
-
-
-
-
-
         }
     },
     mounted() {
-
         if (this.$root.$myCoins) {
-            this.triggerFlag = false
+            this.triggerFlag = false;
         }
     }
-
 }
 </script>
 
 
 <style scoped>
+
 #addCoinsWrapper {
     width: 400px;
     max-width: 400px;

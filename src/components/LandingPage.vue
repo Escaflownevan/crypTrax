@@ -1,6 +1,5 @@
 <template>
 <div id="wrapper" v-if="childDataLoaded">
-
     <countDown></countDown>
     <div v-if="this.globMarket.length!=0 && this.capPercentETH !=0" class="globalNews">
         <p>Global MarketCap: <strong>{{this.globMarket}}<span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></p>
@@ -9,29 +8,23 @@
     <div class="switchHolder">
         <i title="Crypto list view" class="fas fa-th-list ansichtListe"></i>
         <label class="switch" @click="changeView(isToggled)">
-
             <input type="checkbox" v-model="isToggled" :checked="isToggled">
             <span class="slider round"></span>
-
         </label>
         <i title="Tradingview multi window" class="fas fa-th-large ansichtTV"></i>
     </div>
     <coinsList v-if="!isToggled" :key="componentKey"></coinsList>
-
     <blockList v-if="isToggled"></blockList>
     <settings></settings>
     <a v-show="this.$root.$settings.btcecho" id="BTCEchoIcon" class="echo-icon" target="_blank" title="News: BTC-ECHO.de" href="https://www.btc-echo.de/"><img :src="require(`../assets/favicon_be.png`)" height="40px" width="40px" /></a>
-
-
-
 </div>
 </template>
 
 <script>
-import coinsList from './LandingPage/coinsList'
-import countDown from './LandingPage/countDown'
-import settings from './LandingPage/settingsMain'
-import blockList from './LandingPage/blockList'
+import coinsList from './LandingPage/coinsList';
+import countDown from './LandingPage/countDown';
+import settings from './LandingPage/settingsMain';
+import blockList from './LandingPage/blockList';
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
@@ -60,49 +53,49 @@ export default {
             capPercentETH: 0
         }
     },
-
     methods: {
         get30Days() {
-
             var get_30 = async () => {
-                let temparr = []
-                let timeIn
+                let temparr = [];
+                let timeIn;
                 if (this.$root.$myCoins[this.coinsCounter].days30 == undefined) {
-                    timeIn = 0
+                    timeIn = 0;
                 } else {
-                    timeIn = this.$root.$myCoins[this.coinsCounter].days30.timestamp
+                    timeIn = this.$root.$myCoins[this.coinsCounter].days30.timestamp;
                 }
 
                 if (timeIn < (Date.now() - 86400000)) {    //Update 30 Days prices for sparklines only every 24 hours
-                    let data
+                    let data;
                     try {
                         data = await CoinGeckoClient.coins.fetchMarketChart(this.$root.$myCoins[this.coinsCounter].id, {
                             vs_currency: this.$root.$settings.fiat,
                             days: "30",
                             interval: "daily"
-                        })
+                        });
                     } catch (e) {
-                        console.log(e)
-                        this.$children[0].timePassed = 0
-                        this.$children[0].startTimer()
-                        console.log("ERROR RESTART 30Days")
+                        let this2 = this;
+                        setTimeout(function(){
+                            console.log(e);
+                            clearInterval(this2.$children[0].timerInterval)
+                            this2.$children[0].timePassed = 0;
+                            this2.$children[0].startTimer();
+                            console.log("ERROR RESTART 30Days");
+                        },1000)
                     }
 
-
-
                     data.data.prices.forEach((item) => {
-                        let flag = true
-                        let price = String(item[1])
+                        let flag = true;
+                        let price = String(item[1]);
                         if (price.indexOf('.') > -1) {
-                            let a = price.slice(price.indexOf('.') + 1, price.length)
+                            let a = price.slice(price.indexOf('.') + 1, price.length);
                             for (let i = 0; i < a.length; i++) {
                                 if (a.charAt(i) !== '0' && flag) {
-                                    temparr.push(price.slice(0, price.indexOf('.') + i + 3))
-                                    flag = false
+                                    temparr.push(price.slice(0, price.indexOf('.') + i + 3));
+                                    flag = false;
                                 }
                             }
                         } else {
-                            temparr.push(item[1])
+                            temparr.push(item[1]);
                         }
                     });
                     Object.assign(this.$root.$myCoins[this.coinsCounter], {
@@ -110,109 +103,99 @@ export default {
                             "prices": temparr,
                             "timestamp": Date.now()
                         }
-                    })
-
+                    });
                 }
 
                 if (this.coinsCounter == this.$root.$myCoins.length - 1) {
-                    this.saveLocal('myCoinsLocal', this.$root.$myCoins)
-
-                    this.coinsCounter = 0
-                    let this2 = this
+                    this.saveLocal('myCoinsLocal', this.$root.$myCoins);
+                    this.coinsCounter = 0;
+                    let this2 = this;
                     var load_global = async () => {
-                        let data
+                        let data;
                         try {
-                              data = await CoinGeckoClient.global()
+                              data = await CoinGeckoClient.global();
+                              let obj = data.data.data;
+                              Object.keys(obj.total_market_cap).map(function(k) {
+                                  if (k == this2.$root.$settings.fiat.toLowerCase()) {
+                                      let num = obj.total_market_cap[k];
+                                      if (Math.abs(Number(num)) >= 1.0e+12) {
+                                          num = (Math.abs(Number(num)) / 1.0e+12).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Bil" : " Tril");
+                                      }
+                                      if (Math.abs(Number(num)) >= 1.0e+9) {
+                                          num = (Math.abs(Number(num)) / 1.0e+9).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Mil" : " Bil");
+                                      }
+                                      this2.globMarket = num;
+                                  }
+                              })
+                              Object.keys(obj.market_cap_percentage).map(function(k) {
+                                  if (k == "btc") {
+                                      this2.capPercentBTC = obj.market_cap_percentage[k].toFixed(2);
+                                  }
+                                  if (k == "eth") {
+                                      this2.capPercentETH = obj.market_cap_percentage[k].toFixed(2);
+                                  }
+                              })
                         } catch (e) {
-                            console.log(e)
-                            this.$children[0].timePassed = 0
-                            this.$children[0].startTimer()
-                            console.log("ERROR RESTART GLOBAL")
+                            let this2 = this;
+                            setTimeout(function(){
+                                console.log(e);
+                                clearInterval(this2.$children[0].timerInterval);
+                                this2.$children[0].timePassed = 0;
+                                this2.$children[0].startTimer();
+                                console.log("ERROR RESTART GLOBAL");
+                            },1000)
                         }
-
-                        let obj = data.data.data
-                        Object.keys(obj.total_market_cap).map(function(k) {
-                            if (k == this2.$root.$settings.fiat.toLowerCase()) {
-                                let num = obj.total_market_cap[k]
-                                if (Math.abs(Number(num)) >= 1.0e+12) {
-                                    num = (Math.abs(Number(num)) / 1.0e+12).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Bil" : " Tril")
-                                }
-                                if (Math.abs(Number(num)) >= 1.0e+9) {
-                                    num = (Math.abs(Number(num)) / 1.0e+9).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Mil" : " Bil")
-                                }
-
-                                this2.globMarket = num
-                            }
-                        })
-                        Object.keys(obj.market_cap_percentage).map(function(k) {
-                            if (k == "btc") {
-                                this2.capPercentBTC = obj.market_cap_percentage[k].toFixed(2)
-                            }
-                            if (k == "eth") {
-                                this2.capPercentETH = obj.market_cap_percentage[k].toFixed(2)
-                            }
-                        })
                     }
-                    load_global()
-
-                    this.forceRerender()
+                    load_global();
+                    this.forceRerender();
                 } else {
-                    this.coinsCounter++
-                    get_30()
+                    this.coinsCounter++;
+                    get_30();
                 }
             }
-            get_30()
-
+            get_30();
         },
         forceRerender() {
-            this.componentKey += 1
+            this.componentKey += 1;
         },
         changeView(view) {
-            this.$root.$settings.blockView = !view
-
-                this.colorCheck()
-
-
-            this.saveLocal('settings', this.$root.$settings)
-
+            this.$root.$settings.blockView = !view;
+            this.colorCheck();
+            this.saveLocal('settings', this.$root.$settings);
         },
         colorCheck() {
             try {
                 if (this.$root.$settings.blockView) {
-                    document.querySelector(".ansichtTV").classList.add("ansichtAktiv")
-                    document.querySelector(".ansichtListe").classList.remove("ansichtAktiv")
+                    document.querySelector(".ansichtTV").classList.add("ansichtAktiv");
+                    document.querySelector(".ansichtListe").classList.remove("ansichtAktiv");
                 } else {
-                    document.querySelector(".ansichtListe").classList.add("ansichtAktiv")
-                    document.querySelector(".ansichtTV").classList.remove("ansichtAktiv")
+                    document.querySelector(".ansichtListe").classList.add("ansichtAktiv");
+                    document.querySelector(".ansichtTV").classList.remove("ansichtAktiv");
                 }
             } catch (e) {
-                console.log(e)
+                console.log(e);
             }
-
         },
         loadTV() {
             if (this.$root.$settings.tv.length != 0) {
-                document.getElementById("holderIframes").innerHTML = ''
+                document.getElementById("holderIframes").innerHTML = '';
                 this.$root.$settings.tv.forEach((item) => {
                     let frame = '<div class="col span_1_of_3"><iframe src="https://s.tradingview.com/widgetembed/?symbol=' + item + '&interval=' + this.$root.$settings.tv_candle_time +
-                        '&symboledit=1&saveimage=0&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Europe/Berlin%2FUTC&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=de_DE&utm_source=localhost&utm_medium=widget&utm_campaign=chart" /></div>'
-                    document.getElementById("holderIframes").innerHTML += frame
+                        '&symboledit=1&saveimage=0&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Europe/Berlin%2FUTC&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=de_DE&utm_source=localhost&utm_medium=widget&utm_campaign=chart" /></div>';
+                    document.getElementById("holderIframes").innerHTML += frame;
                 });
             } else {
-                document.getElementById("holderIframes").innerHTML = ''
-                document.getElementById("holderIframes").innerHTML = '<h1>Please add currency via menu -> Tradingview</h1> <i  class="fa fa-arrow-right noListArrow"></i>'
-
+                document.getElementById("holderIframes").innerHTML = '';
+                document.getElementById("holderIframes").innerHTML = '<h1>Please add currency via menu -> Tradingview</h1> <i  class="fa fa-arrow-right noListArrow"></i>';
             }
-
         },
         getApiData() {
-            if (this.loadLocal('allCoinsDate') < (Date.now() - 864000000)) { //check ever 10 Days for new Coins
-                this.$root.$coins = []
-                this.$parent._data.totalCounter = this.maxCoins
-
+            if (this.loadLocal('allCoinsDate') < (Date.now() - 864000000)){ //check ever 10 Days for new Coins
+                this.$root.$coins = [];
+                this.$parent._data.totalCounter = this.maxCoins;
                 var load_list = async () => {
-                    console.log("Runs: " + this.countCircle + " / " + this.maxCoins)
-                    this.$parent._data.counter = this.countCircle - 1
+                    console.log("Runs: " + this.countCircle + " / " + this.maxCoins);
+                    this.$parent._data.counter = this.countCircle - 1;
                     try {
                         let data = await CoinGeckoClient.coins.markets({
                             per_page: 250,
@@ -229,56 +212,53 @@ export default {
                                 "logo_url": item.image,
                                 "rank": item.market_cap_rank.toString()
                             }
-                            this.$root.$coins.push(d)
-                        })
+                            this.$root.$coins.push(d);
+                        });
                         if (this.maxCoins == this.countCircle) {
-                            this.$root.$coins.sort((a, b) => (parseInt(a.rank) > parseInt(b.rank)) ? 1 : ((parseInt(b.rank) > parseInt(a.rank)) ? -1 : 0))
-                            this.childDataLoaded = true
-                            this.$parent._data.showLoader = false
-                            this.saveLocal('allCoinsDate', Date.now())
+                            this.$root.$coins.sort((a, b) => (parseInt(a.rank) > parseInt(b.rank)) ? 1 : ((parseInt(b.rank) > parseInt(a.rank)) ? -1 : 0));
+                            this.childDataLoaded = true;
+                            this.$parent._data.showLoader = false;
+                            this.saveLocal('allCoinsDate', Date.now());
                             this.countCircle = 0
-
                             this.saveLocal('allCoinsLocal', this.$root.$coins)
-
                         } else {
                             let this2 = this
                             setTimeout(function(){
-                                this2.countCircle++
-                                this2.forceRerender()
-                                load_list()
+                                this2.countCircle++;
+                                this2.forceRerender();
+                                load_list();
                             },1000)
 
                         }
                     } catch (e) {
                         console.log(e)
-                        this.getApiData()
-                        console.log("Restart loading Top3000")
+                        let this2 = this;
+                        setTimeout(() => {
+                            this2.getApiData();
+                            console.log("Restart loading Top3000");
+                        },1000);
                     }
-
-
                 };
                 load_list()
-
             } else {
-                this.$root.$coins = this.loadLocal('allCoinsLocal')
-                this.childDataLoaded = true
-                this.$parent._data.showLoader = false
-                console.log('Old all $coins wurden geladen von cookie')
+                this.$root.$coins = this.loadLocal('allCoinsLocal');
+                this.childDataLoaded = true;
+                this.$parent._data.showLoader = false;
+                console.log('Old all $coins wurden geladen von cookie');
             }
         }
     },
     mounted() {
-        let this2 = this
+        let this2 = this;
         setTimeout(function() {
-            this2.forceRerender()
-            this2.colorCheck()
+            this2.forceRerender();
+            this2.colorCheck();
         }, 500)
     }
 }
 </script>
 
 <style>
-
 .ansichtAktiv {
     color: #ff9400fc !important
 }
@@ -298,7 +278,6 @@ body {
     font-family: 'Source Sans Pro', sans-serif;
     background: #454552;
     overflow-x: hidden;
-
 }
 
 h2 {
@@ -459,7 +438,6 @@ input:checked+.slider:before {
     transform: translateX(16px);
 }
 
-/* Rounded sliders */
 .slider.round {
     border-radius: 34px;
 }

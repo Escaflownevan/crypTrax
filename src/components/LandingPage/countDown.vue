@@ -16,10 +16,13 @@
 </template>
 
 <script>
-const FULL_DASH_ARRAY = 283
-const WARNING_THRESHOLD = 10
-const ALERT_THRESHOLD = 5
+const CoinGecko = require('coingecko-api');
+const CoinGeckoClient = new CoinGecko();
 
+const TIME_LIMIT = 60;
+const FULL_DASH_ARRAY = 283;
+const WARNING_THRESHOLD = 10;
+const ALERT_THRESHOLD = 5;
 const COLOR_CODES = {
     info: {
         color: 'green'
@@ -32,12 +35,7 @@ const COLOR_CODES = {
         color: 'red',
         threshold: ALERT_THRESHOLD
     }
-}
-
-const TIME_LIMIT = 60
-const CoinGecko = require('coingecko-api');
-const CoinGeckoClient = new CoinGecko();
-
+};
 export default {
     data() {
         return {
@@ -49,28 +47,28 @@ export default {
     },
     computed: {
         circleDasharray() {
-            return `${(this.timeFraction * FULL_DASH_ARRAY).toFixed(0)} 283`
+            return `${(this.timeFraction * FULL_DASH_ARRAY).toFixed(0)} 283`;
         },
 
         formattedTimeLeft() {
-            const timeLeft = this.timeLeft
-            const minutes = Math.floor(timeLeft / 60)
-            let seconds = timeLeft % 60
+            const timeLeft = this.timeLeft;
+            const minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
 
             if (seconds < 10) {
-                seconds = `0${seconds}`
+                seconds = `0${seconds}`;
             }
 
-            return `${minutes}:${seconds}`
+            return `${minutes}:${seconds}`;
         },
 
         timeLeft() {
-            return TIME_LIMIT - this.timePassed
+            return TIME_LIMIT - this.timePassed;
         },
 
         timeFraction() {
-            const rawTimeFraction = this.timeLeft / TIME_LIMIT
-            return rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction)
+            const rawTimeFraction = this.timeLeft / TIME_LIMIT;
+            return rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction);
         },
 
         remainingPathColor() {
@@ -81,25 +79,23 @@ export default {
             } = COLOR_CODES
 
             if (this.timeLeft <= alert.threshold) {
-                return alert.color
+                return alert.color;
             } else if (this.timeLeft <= warning.threshold) {
-                return warning.color
+                return warning.color;
             } else {
-                return info.color
+                return info.color;
             }
         }
     },
-
     watch: {
         timeLeft(newValue) {
             if (newValue === 0) {
-                this.onTimesUp()
+                this.onTimesUp();
             }
         }
     },
-
     mounted() {
-        this.onTimesUp()
+        this.onTimesUp();
     },
     methods: {
         update(target, src) {
@@ -110,10 +106,10 @@ export default {
         },
         onTimesUp() {
             if (this.$root.$myCoins.length == 0) {
-                this.timePassed = 0
-                this.timerInterval = null
-                console.log("Update Stop - No Coins")
-                return
+                this.timePassed = 0;
+                this.timerInterval = null;
+                console.log("Update Stop - No Coins");
+                return;
             }
 
             function array_move(arr, old_index, new_index) {
@@ -124,92 +120,75 @@ export default {
                     }
                 }
                 arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-                return arr; // for testing
+                return arr;
             }
             let idsCoins = '';
-            let temparr = []
-            this.$root.$myCoins = this.loadLocal('myCoinsLocal')
+            let temparr = [];
+            this.$root.$myCoins = this.loadLocal('myCoinsLocal');
             if (this.$root.$myCoins != null) {
-                clearInterval(this.timerInterval)
-
+                clearInterval(this.timerInterval);
                 this.$root.$myCoins.forEach((item, i) => {
                     idsCoins += item.id.toLowerCase();
-                    temparr.push(item.symbol)
+                    temparr.push(item.symbol);
                     if (i !== this.$root.$myCoins.length - 1) {
-                        idsCoins += ','
+                        idsCoins += ',';
                     }
-
                 })
 
-
-
-
                 var update_list = async() => {
-                    let data
+                    let data;
                     try {
                          data = await CoinGeckoClient.coins.markets({ids: idsCoins,per_page: 250, localization: false, vs_currency: this.$root.$settings.fiat, price_change_percentage: "1h,24h,7d"});
+                         for (let i = 0; i < temparr.length; i++) {
+                             for (let o = 0; o < data.data.length; o++) {
+                                 if (temparr[i] == data.data[o].symbol.toUpperCase()) {
+                                     array_move(data.data, o, i);
+                                 }
+                             }
+                         }
 
+                         data.data.forEach((item, i) => {
+                             Object.assign(this.$root.$myCoins[i], {
+                                 "id": item.id,
+                                 "name": item.name,
+                                 "symbol": item.symbol.toUpperCase(),
+                                 "logo_url": item.image,
+                                 "rank": item.market_cap_rank.toString(),
+                                 "price": item.current_price.toString(),
+                                 "market_cap": item.market_cap.toString(),
+                                 "high": item.ath.toString(),
+                                 "time1h": item.price_change_percentage_1h_in_currency.toString(),
+                                 "time1d": item.price_change_percentage_24h_in_currency.toString(),
+                                 "time7d": item.price_change_percentage_7d_in_currency.toString()
+                             });
+                         })
+
+                         this.saveLocal('myCoinsLocal', this.$root.$myCoins);
+                         this.$parent.$parent._data.showLoader = false;
+                         this.timePassed = 0;
+                         this.startTimer();
+                         temparr = [];
+                         this.$parent.get30Days();
+                         console.log("Update loaded complete");
                     } catch (e) {
-                        console.log(e)
-                        this.timePassed = 0
-                        this.startTimer()
-                        console.log("ERROR RESTART COUNTDOWN")
+                        let this2 = this;
+                        setTimeout(function(){
+                            console.log(e);
+                            clearInterval(this2.timerInterval);
+                            this2.timePassed = 0;
+                            this2.startTimer();
+                            console.log("ERROR RESTART COUNTDOWN");
+                        },1000)
                     }
-
-                    for (let i = 0; i < temparr.length; i++) {
-                        for (let o = 0; o < data.data.length; o++) {
-
-                            if (temparr[i] == data.data[o].symbol.toUpperCase()) {
-                                array_move(data.data, o, i)
-                            }
-                        }
-                    }
-
-                    data.data.forEach((item, i) => {
-                        Object.assign(this.$root.$myCoins[i], {
-                            "id": item.id,
-                            "name": item.name,
-                            "symbol": item.symbol.toUpperCase(),
-                            "logo_url": item.image,
-                            "rank": item.market_cap_rank.toString(),
-                            "price": item.current_price.toString(),
-                            "market_cap": item.market_cap.toString(),
-                            "high": item.ath.toString(),
-                            "time1h": item.price_change_percentage_1h_in_currency.toString(),
-                            "time1d": item.price_change_percentage_24h_in_currency.toString(),
-                            "time7d": item.price_change_percentage_7d_in_currency.toString()
-                        });
-
-                    })
-
-                    this.saveLocal('myCoinsLocal', this.$root.$myCoins)
-
-
-
-
-
-
-                    this.$parent.$parent._data.showLoader = false
-
-                    this.timePassed = 0
-                    this.startTimer()
-                    temparr = []
-                    this.$parent.get30Days()
-                    console.log("Update loaded complete")
-
-
-
                 };
-
                 update_list()
-
             } else {
-                clearInterval(this.timerInterval)
-                this.timePassed = 0
+                clearInterval(this.timerInterval);
+                this.timePassed = 0;
             }
         },
         startTimer() {
-            this.timerInterval = setInterval(() => (this.timePassed += 1), 1000)
+            this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
         }
     }
 }

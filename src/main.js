@@ -1,12 +1,11 @@
-import Vue from 'vue'
-import App from './App.vue'
-import '@/vueHelper/mixin'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
-import Sparkline from 'vue-sparklines'
+import Vue from 'vue';
+import App from './App.vue';
+import '@/vueHelper/mixin';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+import Sparkline from 'vue-sparklines';
 
-
-Vue.config.productionTip = false
-Vue.use(Sparkline)
+Vue.config.productionTip = false;
+Vue.use(Sparkline);
 
 new Vue({
     data: {
@@ -16,4 +15,4 @@ new Vue({
         $settings: []
     },
     render: h => h(App),
-}).$mount('#app')
+}).$mount('#app');
