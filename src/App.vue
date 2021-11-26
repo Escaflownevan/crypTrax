@@ -1,9 +1,8 @@
 <template>
 <div id="app">
     <div v-if="showLoader" id="loaderFrame">
-        <h1>Top 3000 Cryptocurrencies are loading by coingeko.com</h1>
-        <span>This can take a few minutes...<br><br></span>
-        <span>Repeat every 10 days to check for new coins</span>
+        <h1>Top 3000 Cryptocurrencies are loading by Coingeko.com</h1>
+        <span>This can take 1 - 5 minutes<br><br></span>        
         <div class="loader">
             <div class="chart">
                 <div class="bar bar-0 red">
@@ -24,7 +23,7 @@
                 </div>
             </div>
         </div>
-        <h2><strong>{{showPercent()}} %</strong></h2>
+        <h2><strong><i class="fas fa-spinner fa-pulse"></i> {{showPercent()}} %</strong></h2>
     </div>
     <LandingPage></LandingPage>
 </div>
@@ -55,6 +54,7 @@ export default {
                 timer: false,
                 btcecho: false,
                 cg_logo: true,
+                info_panel: true,
                 table_sort: '',
                 fiat: 'USD',
                 tv: [],
@@ -113,6 +113,7 @@ export default {
                     }
                 ]
             }
+            this.saveLocal('settings', this.$root.$settings);
         }
 
         const plugin = document.createElement("script");

@@ -64,6 +64,9 @@
                     <input id="showTimer" class="sonstigesInput" @change="timerChange" type="checkbox" name="showTimer" :checked="timer" /><label v-if="!settingsCat.isHiddenTimer" for="showTimer"> Show update countdown</label>
                 </div>
                 <div class="spacerCard">
+                    <input class="sonstigesInput" @change="infoPanelChange" type="checkbox" name="showInfoPanel" :checked="infoPanel" /><label v-if="!settingsCat.isHiddenTimer" for="showInfoPanel"> Show info panel (Global Market, Your values)</label>
+                </div>
+                <div class="spacerCard">
                     <input class="sonstigesInput" @change="BTCEChange" type="checkbox" name="showBTCEcho" :checked="btcecho" /><label v-if="!settingsCat.isHiddenTimer" for="showBTCEcho"> Show BTC-Echo.de link</label>
                 </div>
                 <div class="spacerCard">
@@ -98,6 +101,7 @@ export default {
             value: this.$root.$settings.fiat,
             timer: this.$root.$settings.timer,
             btcecho: this.$root.$settings.btcecho,
+            infoPanel: this.$root.$settings.info_panel,
             update: 0,
             settings: this.$root.$settings,
             settingsCat: {
@@ -135,7 +139,7 @@ export default {
             });
 
         },
-        forceRerender() {
+        forceRerenderBought() {
             this.update += 1;
         },
         myFunction() {
@@ -153,6 +157,16 @@ export default {
                 this.$root.$settings.btcecho = false;
             } else {
                 this.$root.$settings.btcecho = true;
+            }
+            this.saveLocal('settings', this.$root.$settings);
+        },
+        infoPanelChange() {
+            var yourUl = document.getElementById('infoPanel');
+            yourUl.style.display = yourUl.style.display === 'none' ? '' : 'none';
+            if (this.$root.$settings.info_panel) {
+                this.$root.$settings.info_panel = false;
+            } else {
+                this.$root.$settings.info_panel = true;
             }
             this.saveLocal('settings', this.$root.$settings);
         },

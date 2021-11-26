@@ -10,14 +10,14 @@
                 <th scope="col"><span v-if="fiat==='EUR'"> €</span><span v-else> $</span> Price @ Buy</th>
             </tr>
         </thead>
-        <tr class="allBoughtCoins" v-for="item in myCoins" :key="item.symbol">
+        <tr class="allBoughtCoins" v-for="item in this.$root.$myCoins" :key="item.symbol">
             <td><img :src="''+item.logo_url" height="20px" /></td>
             <td class="symbol">{{ item.symbol }}</td>
             <td class="ammount"><input ref="numberCoins" type="number" value="" /></td>
             <td class="boughtPrice"><input ref="priceBought" type="number" value="" /></td>
         </tr>
-        <button @click="save" class="save">Save</button>
     </table>
+    <button @click="save" class="save">Save <i v-show="loadingStart && !firstLoad" class="fas fa-spinner fa-pulse"></i><i v-show="loadingEnd && !firstLoad" class="fas fa-check"></i></button>
 </div>
 </template>
 
@@ -26,14 +26,17 @@ export default {
     name: 'boughtCoins',
     data() {
         return {
-            myCoins: this.$root.$myCoins,
             tempBoughtCoins: [],
             fiat: this.$root.$settings.fiat,
-            boughtCoins: this.$root.$boughtCoins
+            boughtCoins: this.$root.$boughtCoins,
+            loadingEnd: false,
+            loadingStart: false,
+            firstLoad: false
         }
     },
     methods: {
         save() {
+            this.loadingStart = true;
             this.tempBoughtCoins = [];
             this.$root.$myCoins.forEach((item, i) => {
                 let tempObj = {};
@@ -45,6 +48,11 @@ export default {
             this.$parent.$parent.forceRerender();
             this.$root.$boughtCoins = this.tempBoughtCoins;
             this.saveLocal('boughtCoins', this.tempBoughtCoins);
+            this.loadingStart = false;
+            this.loadingEnd = true;
+            setTimeout(() => {
+                this.loadingEnd = false;
+            }, 2000);
         }
     },
     mounted() {
@@ -57,7 +65,12 @@ export default {
                 }
             });
         });
+        this.firstLoad = true;
         this.save();
+        setTimeout(() => {
+            this.firstLoad = false;
+        }, 3000);
+
     }
 }
 </script>
@@ -85,7 +98,7 @@ table {
     button {
         margin-top: 10px;
     }
-    
+
     td,
     th {
         color: darken($baseColor, 10%);

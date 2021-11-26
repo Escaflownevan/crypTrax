@@ -28,28 +28,28 @@
                         <a v-show="cmcView" class="cmc-icon" :title="item.name+' open on Coingeko.com'" target="_blank" :href="'https://www.coingecko.com/en/coins/'+item.id"><img :src="require(`../../assets/gecko.png`)" height="20px" width="20px" /></a></td>
                     <td :class="{hide: !view[2].view}">{{ item.rank }}</td>
                     <td :class="{hide: !view[3].view}" v-if="item.price"><strong>{{ formatPrice(item.price) }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></strong></td>
-                    <td v-else>Loading</td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
                     <td v-if="item.time1h" :class="{positive: item.time1h > 0, negative: item.time1h < 0, hide: !view[4].view}">{{ formatProzent(item.time1h) }}<span> %</span></td>
-                    <td v-else>Loading</td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
                     <td v-if="item.time1d" :class="{positive: item.time1d > 0, negative: item.time1d < 0,hide: !view[5].view}">{{ formatProzent(item.time1d) }}<span> %</span></td>
-                    <td v-else>Loading</td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
                     <td v-if="item.time7d" :class="{positive: item.time7d > 0, negative: item.time7d < 0, hide: !view[6].view}">{{ formatProzent(item.time7d) }}<span> %</span></td>
-                    <td v-else>Loading</td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
                     <td v-if="formatCap(item.market_cap)" :class="{hide: !view[7].view}">{{ formatCap(item.market_cap) }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
-                    <td v-else>Loading</td>
-                    <td v-if="maxValue(item)" :class="{positive: maxValues > 0, negative: maxValues < 0, hide: !view[8].view}">{{ (maxValues=="NaN") ? "Loading": maxValues }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
-                    <td v-else>Loading</td>
-                    <td v-if="compEqRef(item)" :class="{positive: profitLoss > 0, negative: profitLoss < 0, hide: !view[9].view}">{{ (profitLoss=="NaN") ? "Loading": profitLoss }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
-                    <td v-else>Loading</td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
+                    <td v-if="maxValue(item)" :class="{positive: maxValues > 0, negative: maxValues < 0, hide: !view[8].view}">{{ (maxValues=="NaN") ? 'Loading': maxValues }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
+                    <td v-if="compEqRef(item)" :class="{positive: profitLoss > 0, negative: profitLoss < 0, hide: !view[9].view}">{{ (profitLoss=="NaN") ? 'Loading': profitLoss }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
                     <td :class="{hide: !view[10].view}" v-if="item.high">{{ formatPrice(item.high) }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
-                    <td v-else>Loading</td>
+                    <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
                     <td :class="{hide: !view[11].view}">
                         <sparkline v-if="item.days30!=undefined" width="100" height="30" :indicatorStyles="spIndicatorStyles3">
                             <sparklineCurve :data="item.days30.prices" :limit="item.days30.prices.length" :styles="spCurveStyles3" :spotStyles="spSpotStyles3" :spotProps="spSpotProps3" :refLineType="spRefLineType3" :refLineStyles="spRefLineStyles3" />
                         </sparkline>
-                        <p v-else>Loading</p>
+                        <p v-else><i class="fas fa-spinner fa-pulse"></i></p>
                     </td>
-                    <td :class="{hide: !view[12].view}"><button :title="item.name+' delete'" @click="delCoin(item.symbol)" class="del">x</button></td>
+                    <td :class="{hide: !view[12].view}"><button :title="item.name+' delete'" @click="delCoin(item.symbol)" class="del"><i class="fas fa-trash-alt"></i></button></td>
                 </tr>
             </draggable>
         </table>
@@ -139,6 +139,7 @@ export default {
         checkMove: function() {
             this.$root.$myCoins = this.list;
             this.saveLocal('myCoinsLocal', this.$root.$myCoins);
+            this.$parent.$children[1].forceRerenderBought();
         },
         delCoin(id) {
             this.$root.$myCoins.forEach((item, i) => {
@@ -214,11 +215,18 @@ a:visited {
 
 }
 
-.del {
-    background-color: red;
-    border-radius: 50px;
-    width: 25px;
-    height: 25px;
+.del{
+    border: none;
+
+    i{
+        font-size: 18px;
+    }
+}
+
+.del:hover{
+    transform: scale(1.2);
+    cursor: pointer;
+    color: red;
 }
 
 $baseColor: #565753;

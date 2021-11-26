@@ -1,10 +1,14 @@
 <template>
 <div id="wrapper" v-if="childDataLoaded">
     <countDown></countDown>
-    <div v-if="this.globMarket.length!=0 && this.capPercentETH !=0" class="globalNews">
-        <p>Global MarketCap: <strong>{{this.globMarket}}<span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></p>
-        <p>Flippening: <strong>BTC {{this.capPercentBTC}} % - ETH {{this.capPercentETH}} %</strong></p>
+    <div id="infoPanel" v-show="this.$root.$settings.info_panel">
+        <div v-show="this.globMarket.length!=0 && this.capPercentETH !=0">
+            <p>Global MarketCap: <strong>{{this.globMarket}}<span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></p>
+            <p>Flippening: <strong>BTC {{this.capPercentBTC}} % - ETH {{this.capPercentETH}} %</strong></p>
+        </div>
+        <p v-show="this.totalValue() != 0 || this.totalProfLoss() != 0">Values: <strong>{{ this.totalValue() }} <span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong> | P/L: <strong>{{ this.totalProfLoss() }} <span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></p>
     </div>
+
     <div class="switchHolder">
         <i title="Crypto list view" class="fas fa-th-list ansichtListe"></i>
         <label class="switch" @click="changeView(isToggled)">
@@ -50,7 +54,34 @@ export default {
             coinsCounter: 0,
             globMarket: "",
             capPercentBTC: 0,
-            capPercentETH: 0
+            capPercentETH: 0,
+            totalValue(){
+                let all = 0;
+                let obj = this.$root.$boughtCoins;
+                obj.forEach((item, i) => {
+                    if (obj[i].ammount>0) {
+                        all += obj[i].ammount * this.$root.$myCoins[i].price;
+                    }
+                });
+                return all.toFixed(2);
+            },
+            totalProfLoss(){
+                let all = 0;
+                let obj = this.$root.$boughtCoins;
+                obj.forEach((item, i) => {
+                    if (obj[i].ammount>0) {
+                        let p = obj[i].boughtPrice;
+                        if (p == 0) {
+                            all += obj[i].ammount * this.$root.$myCoins[i].price;
+                        }else{
+                            let a = obj[i].ammount * p;
+                            let b = obj[i].ammount * this.$root.$myCoins[i].price;
+                            all += b - a;
+                        }
+                    }
+                });
+                return all.toFixed(2);
+            }
         }
     },
     methods: {
@@ -72,16 +103,7 @@ export default {
                             days: "30",
                             interval: "daily"
                         });
-                    } catch (e) {
-                        let this2 = this;
-                        setTimeout(function(){
-                            console.log(e);
-                            clearInterval(this2.$children[0].timerInterval)
-                            this2.$children[0].timePassed = 0;
-                            this2.$children[0].startTimer();
-                            console.log("ERROR RESTART 30Days");
-                        },1000)
-                    }
+
 
                     data.data.prices.forEach((item) => {
                         let flag = true;
@@ -104,56 +126,60 @@ export default {
                             "timestamp": Date.now()
                         }
                     });
+                } catch (e) {
+                    console.log(e);
+                }
                 }
 
                 if (this.coinsCounter == this.$root.$myCoins.length - 1) {
                     this.saveLocal('myCoinsLocal', this.$root.$myCoins);
                     this.coinsCounter = 0;
-                    let this2 = this;
-                    var load_global = async () => {
-                        let data;
-                        try {
-                              data = await CoinGeckoClient.global();
-                              let obj = data.data.data;
-                              Object.keys(obj.total_market_cap).map(function(k) {
-                                  if (k == this2.$root.$settings.fiat.toLowerCase()) {
-                                      let num = obj.total_market_cap[k];
-                                      if (Math.abs(Number(num)) >= 1.0e+12) {
-                                          num = (Math.abs(Number(num)) / 1.0e+12).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Bil" : " Tril");
-                                      }
-                                      if (Math.abs(Number(num)) >= 1.0e+9) {
-                                          num = (Math.abs(Number(num)) / 1.0e+9).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Mil" : " Bil");
-                                      }
-                                      this2.globMarket = num;
-                                  }
-                              })
-                              Object.keys(obj.market_cap_percentage).map(function(k) {
-                                  if (k == "btc") {
-                                      this2.capPercentBTC = obj.market_cap_percentage[k].toFixed(2);
-                                  }
-                                  if (k == "eth") {
-                                      this2.capPercentETH = obj.market_cap_percentage[k].toFixed(2);
-                                  }
-                              })
-                        } catch (e) {
-                            let this2 = this;
-                            setTimeout(function(){
-                                console.log(e);
-                                clearInterval(this2.$children[0].timerInterval);
-                                this2.$children[0].timePassed = 0;
-                                this2.$children[0].startTimer();
-                                console.log("ERROR RESTART GLOBAL");
-                            },1000)
-                        }
-                    }
-                    load_global();
-                    this.forceRerender();
+                    setTimeout(()=>{
+                        this.loadGlobal();
+                        this.forceRerender();
+                    },1000);
                 } else {
-                    this.coinsCounter++;
-                    get_30();
+                    setTimeout(()=>{
+                        this.forceRerender();
+                        this.coinsCounter++;
+                        get_30();
+                    },1000);
                 }
             }
             get_30();
+        },
+        loadGlobal () {
+            let this2 = this
+            var load_global = async () => {
+                let data;
+                try {
+                      data = await CoinGeckoClient.global();
+                      let obj = data.data.data;
+                      Object.keys(obj.total_market_cap).map(function(k) {
+                          if (k == this2.$root.$settings.fiat.toLowerCase()) {
+                              let num = obj.total_market_cap[k];
+                              if (Math.abs(Number(num)) >= 1.0e+12) {
+                                  num = (Math.abs(Number(num)) / 1.0e+12).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Bil" : " Tril");
+                              }
+                              if (Math.abs(Number(num)) >= 1.0e+9) {
+                                  num = (Math.abs(Number(num)) / 1.0e+9).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Mil" : " Bil");
+                              }
+                              this2.globMarket = num;
+                          }
+                      })
+                      Object.keys(obj.market_cap_percentage).map(function(k) {
+                          if (k == "btc") {
+                              this2.capPercentBTC = obj.market_cap_percentage[k].toFixed(2);
+                          }
+                          if (k == "eth") {
+                              this2.capPercentETH = obj.market_cap_percentage[k].toFixed(2);
+                          }
+                      })
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+            load_global();
         },
         forceRerender() {
             this.componentKey += 1;
@@ -173,7 +199,7 @@ export default {
                     document.querySelector(".ansichtTV").classList.remove("ansichtAktiv");
                 }
             } catch (e) {
-                console.log(e);
+                //console.log(e);
             }
         },
         loadTV() {
@@ -259,6 +285,14 @@ export default {
 </script>
 
 <style>
+.fa-spinner{
+    color: #ff9400fc!important;
+}
+
+.fa-check{
+    color: green!important;
+}
+
 .ansichtAktiv {
     color: #ff9400fc !important
 }
@@ -466,7 +500,7 @@ input:checked+.slider:before {
     left: 125px;
 }
 
-.globalNews {
+#infoPanel {
     position: absolute;
     top: 20px;
     left: 0;

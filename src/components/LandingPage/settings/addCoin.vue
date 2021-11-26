@@ -7,7 +7,7 @@
             <div class="option__desc"><span class="option__small">#{{ props.option.rank }} - </span><span class="option__title">{{ props.option.name }}</span></div>
         </template>
     </multiselect>
-    <button @click="actData">Add Coins</button>
+    <button @click="actData">Add Coins <i v-show="loadingStart" class="fas fa-spinner fa-pulse"></i><i v-show="loadingEnd" class="fas fa-check"></i></button>
 </div>
 </template>
 
@@ -23,11 +23,14 @@ export default {
         return {
             options: this.$root.$coins,
             value: [],
-            boughtCoins: this.$root.$boughtCoins
+            boughtCoins: this.$root.$boughtCoins,
+            loadingEnd: false,
+            loadingStart: false
         }
     },
     methods: {
         actData() {
+            this.loadingStart = true;
             let el = JSON.parse(JSON.stringify(this.value));
             el.forEach((item) => {
                 let flag = true;
@@ -53,8 +56,7 @@ export default {
                 }
             });
             this.saveLocal('myCoinsLocal', this.$root.$myCoins);
-            this.value = [];
-
+            this.value = [];            
             try {
                 clearInterval(this.$parent.$parent.$children[0].timerInterval);
                 this.$parent.$parent.$children[0].timePassed = 0;
@@ -78,6 +80,13 @@ export default {
             } catch (e) {
                 //console.log(e);
             }
+
+            this.loadingStart = false;
+            this.loadingEnd = true;
+            setTimeout(() => {
+                this.loadingEnd = false;
+                this.$parent.$parent.forceRerender();
+            }, 2000);
         }
     },
     mounted() {

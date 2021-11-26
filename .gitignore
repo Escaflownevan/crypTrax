@@ -2,6 +2,7 @@
 node_modules
 /dist
 yarn.lock
+sparkline_snippet.txt
 
 # local env files
 .env.local
