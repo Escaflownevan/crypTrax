@@ -8,6 +8,13 @@
         </template>
     </multiselect>
     <button @click="actData">Add Coins <i v-show="loadingStart" class="fas fa-spinner fa-pulse"></i><i v-show="loadingEnd" class="fas fa-check"></i></button>
+    <div v-show="this.$root.$myCoins != 0" class="actCoins">
+        <h2>Actual cryptocurrencies</h2>
+        <ul :key="this.updateCoin">
+            <li v-for="coin in this.$root.$myCoins" :key="coin.symbol">
+                <img :src="''+coin.logo_url" height="20px" /><p>{{ coin.name }}</p></li>
+        </ul>
+    </div>
 </div>
 </template>
 
@@ -25,10 +32,14 @@ export default {
             value: [],
             boughtCoins: this.$root.$boughtCoins,
             loadingEnd: false,
-            loadingStart: false
+            loadingStart: false,
+            updateCoin: 0
         }
     },
     methods: {
+        updateActCoin () {
+                this.updateCoin += 1;
+        },
         actData() {
             this.loadingStart = true;
             let el = JSON.parse(JSON.stringify(this.value));
@@ -56,29 +67,15 @@ export default {
                 }
             });
             this.saveLocal('myCoinsLocal', this.$root.$myCoins);
-            this.value = [];            
-            try {
-                clearInterval(this.$parent.$parent.$children[0].timerInterval);
-                this.$parent.$parent.$children[0].timePassed = 0;
-                this.$parent.$parent.$children[0].onTimesUp();
-            } catch (e) {
-                //console.log(e);
-            }
-
-            try {
-                clearInterval(this.$parent.$parent.$children[1].timerInterval);
-                this.$parent.$parent.$children[1].timePassed = 0;
-                this.$parent.$parent.$children[1].onTimesUp();
-            } catch (e) {
-                //console.log(e);
-            }
-
-            try {
-                clearInterval(this.$parent.$parent.$children[2].timerInterval);
-                this.$parent.$parent.$children[2].timePassed = 0;
-                this.$parent.$parent.$children[2].onTimesUp();
-            } catch (e) {
-                //console.log(e);
+            this.value = [];
+            for (var i = 0; i < 3; i++) {
+                try {
+                    clearInterval(this.$parent.$parent.$children[i].timerInterval);
+                    this.$parent.$parent.$children[i].timePassed = 0;
+                    this.$parent.$parent.$children[i].onTimesUp();
+                } catch (e) {
+                    //console.log(e);
+                }
             }
 
             this.loadingStart = false;
@@ -99,7 +96,36 @@ export default {
 
 
 <style scoped>
+.actCoins{
+    margin-top: 20px;
+}
+.actCoins ul{
+    list-style: none;
+    margin-top: 5px;
 
+}
+.actCoins li{
+    padding: 5px 10px;
+}
+
+.actCoins li p{
+    display: inline;
+    top: -3.3px;
+    position: relative;
+}
+
+
+.actCoins li img{
+    margin-right: 5px;
+}
+
+.actCoins li:nth-child(2n) {
+        background-color: white;
+    }
+
+.actCoins li:nth-child(2n+1) {
+        background-color: lightgrey;
+    }
 #addCoinsWrapper {
     width: 400px;
     max-width: 400px;

@@ -19,7 +19,7 @@
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
-const TIME_LIMIT = 60;
+const TIME_LIMIT = 60;                  //set countdown time in seconds
 const FULL_DASH_ARRAY = 283;
 const WARNING_THRESHOLD = 10;
 const ALERT_THRESHOLD = 5;
@@ -106,12 +106,11 @@ export default {
         },
         onTimesUp() {
             if (this.$root.$myCoins.length == 0) {
+                clearInterval(this.timerInterval);
                 this.timePassed = 0;
-                this.timerInterval = null;
                 console.log("Update Stop - No Coins");
                 return;
             }
-
             function array_move(arr, old_index, new_index) {
                 if (new_index >= arr.length) {
                     var k = new_index - arr.length + 1;
@@ -125,7 +124,7 @@ export default {
             let idsCoins = '';
             let temparr = [];
             this.$root.$myCoins = this.loadLocal('myCoinsLocal');
-            if (this.$root.$myCoins != null) {
+            if (this.$root.$myCoins.length != 0) {
                 clearInterval(this.timerInterval);
                 this.$root.$myCoins.forEach((item, i) => {
                     idsCoins += item.id.toLowerCase();
@@ -157,9 +156,9 @@ export default {
                                  "price": item.current_price.toString(),
                                  "market_cap": item.market_cap.toString(),
                                  "high": item.ath.toString(),
-                                 "time1h": item.price_change_percentage_1h_in_currency.toString(),
-                                 "time1d": item.price_change_percentage_24h_in_currency.toString(),
-                                 "time7d": item.price_change_percentage_7d_in_currency.toString()
+                                 "time1h": item.price_change_percentage_1h_in_currency ? item.price_change_percentage_1h_in_currency.toString() : "0",
+                                 "time1d": item.price_change_percentage_24h_in_currency ? item.price_change_percentage_24h_in_currency.toString() : "0",
+                                 "time7d": item.price_change_percentage_7d_in_currency ? item.price_change_percentage_7d_in_currency.toString() : "0"
                              });
                          })
 
@@ -171,6 +170,13 @@ export default {
                          this.$parent.get30Days();
                          console.log("Update loaded complete");
                     } catch (e) {
+                        if (e == "TypeError: Cannot read property 'toString' of null") {
+                            this.$root.$myCoins.forEach((item) => {
+                                if (item.rank > 2999) {
+                                    console.log("This coin rank over 3000: "+item.id+" | Rank: "+item.rank)
+                                }
+                            });
+                        }
                         let this2 = this;
                         setTimeout(function(){
                             console.log(e);
@@ -188,7 +194,13 @@ export default {
             }
         },
         startTimer() {
-            this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
+            if (this.timePassed == 0) {
+                this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
+            }else{
+                console.log("Countdown already running!!!")
+            }
+
+
         }
     }
 }
@@ -196,11 +208,9 @@ export default {
 
 <style scoped lang="scss">
 .base-timer {
-    position: absolute;
-    top: 10px;
-    left: 175px;
     width: 70px;
-    height: 70px;
+    top: -10px;
+    position: relative;
 
     &__svg {
         transform: scaleX(-1);

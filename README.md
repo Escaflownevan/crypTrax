@@ -10,6 +10,7 @@ This is a hobby project with VUE.js + Electron to track your cryptocurrencies. T
 - Profit / Loss calculator
 - Base currencies: USD, EUR, AUD
 - Customizable categories
+- Track your Profit / Loss
 - Trandingview.com multi window view
 - Update coins data every 1 minute
 - Checking every 10 Days for new currencies
@@ -23,8 +24,8 @@ Download: -> [Releases](https://github.com/Escaflownevan/Desktop-Crypto-Tracker/
 
 ### Program in use
 
-![alt text](https://i.ibb.co/HHKTZSL/dct1.jpg)
-![alt text](https://i.ibb.co/rMZjz5x/dct2.jpg)
+![alt text](https://i.ibb.co/LR6bSWS/Clipboard02.jpg)
+![alt text](https://i.ibb.co/T8hNk9f/Clipboard04.jpg)
 
 #### Donation
 

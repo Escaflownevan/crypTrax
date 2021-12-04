@@ -44,7 +44,7 @@
                     <td :class="{hide: !view[10].view}" v-if="item.high">{{ formatPrice(item.high) }} <span v-if="fiat==='EUR'"> €</span><span v-else> $</span></td>
                     <td v-else><i class="fas fa-spinner fa-pulse"></i></td>
                     <td :class="{hide: !view[11].view}">
-                        <sparkline v-if="item.days30!=undefined" width="100" height="30" :indicatorStyles="spIndicatorStyles3">
+                        <sparkline v-if="item.days30!=undefined" width="100" height="30" :indicatorStyles="spIndicatorStyles3" :tooltipProps="spTooltipProps3">
                             <sparklineCurve :data="item.days30.prices" :limit="item.days30.prices.length" :styles="spCurveStyles3" :spotStyles="spSpotStyles3" :spotProps="spSpotProps3" :refLineType="spRefLineType3" :refLineStyles="spRefLineStyles3" />
                         </sparkline>
                         <p v-else><i class="fas fa-spinner fa-pulse"></i></p>
@@ -97,7 +97,18 @@ export default {
             },
             spIndicatorStyles3: {
                 stroke: '#000'
-            }
+            },
+            spTooltipProps3: {
+        formatter (val) {
+              var dt = new Date();
+              dt.setDate( dt.getDate() - (30 - val.index) );
+              const year = dt.getFullYear();
+              const date1 = dt.getDate();
+              const monthIndex = dt.getMonth()+1;
+              const date = `${date1}.${monthIndex}.${year}`;
+              return `<span style="color:${val.color}">&bull;</span>&nbsp;Price: ${val.value} | ${date}<br />`;
+        }
+      }
         }
     },
     methods: {
@@ -139,7 +150,14 @@ export default {
         checkMove: function() {
             this.$root.$myCoins = this.list;
             this.saveLocal('myCoinsLocal', this.$root.$myCoins);
-            this.$parent.$children[1].forceRerenderBought();
+            for (var i = 0; i < 3; i++) {
+                try {
+                    this.$parent.$children[i].forceRerenderBought();
+                } catch (e) {
+                    //console.log(e)
+                }
+            }
+            this.$parent.$children[1].$children[0].updateActCoin();
         },
         delCoin(id) {
             this.$root.$myCoins.forEach((item, i) => {
@@ -154,6 +172,7 @@ export default {
                     this.saveLocal('boughtCoins', this.$root.$boughtCoins);
                 }
             })
+            this.$parent.$children[1].$children[0].updateActCoin();
         },
         maxValue(item) {
             if (this.$root.$boughtCoins !== null) {

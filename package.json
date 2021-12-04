@@ -1,6 +1,6 @@
 {
     "name": "Desktop-Crypto-Tracker",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "author": "esca<esca@esca.com>",
     "homepage": "https://johndoe.com/",
     "description": "VUE + Electron. App to list and watch crypto currencies",
@@ -9,7 +9,7 @@
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
         "lint": "vue-cli-service lint",
-        "electron:build": "vue-cli-service electron:build --win --x64 --dir",
+        "electron:build": "vue-cli-service electron:build --win --x64 --dir",        
         "electron:serve": "vue-cli-service electron:serve",
         "postinstall": "electron-builder install-app-deps",
         "postuninstall": "electron-builder install-app-deps"

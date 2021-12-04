@@ -37,6 +37,7 @@ export default {
     methods: {
         save() {
             this.loadingStart = true;
+            this.$parent.$parent.forceRerender();
             this.tempBoughtCoins = [];
             this.$root.$myCoins.forEach((item, i) => {
                 let tempObj = {};
@@ -44,12 +45,12 @@ export default {
                 tempObj.ammount = this.$refs.numberCoins[i].value;
                 tempObj.boughtPrice = this.$refs.priceBought[i].value;
                 this.tempBoughtCoins.push(tempObj);
-            })
-            this.$parent.$parent.forceRerender();
+            })            
             this.$root.$boughtCoins = this.tempBoughtCoins;
             this.saveLocal('boughtCoins', this.tempBoughtCoins);
             this.loadingStart = false;
             this.loadingEnd = true;
+            this.$parent.$parent.forceRerender();
             setTimeout(() => {
                 this.loadingEnd = false;
             }, 2000);

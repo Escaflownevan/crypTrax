@@ -41,9 +41,9 @@
             </li>
             <li>
                 <div v-on:click=" hideOthers('isHiddenToggleView')" class="card">
-                    <i class="fas fa-tv"></i>
+                    <i class="fa fa-table"></i>
                     <div class="containerCard">
-                        <h5>View</h5>
+                        <h5>Column's</h5>
                     </div>
                 </div>
             </li>

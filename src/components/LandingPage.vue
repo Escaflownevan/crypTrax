@@ -1,26 +1,41 @@
 <template>
 <div id="wrapper" v-if="childDataLoaded">
-    <countDown></countDown>
-    <div id="infoPanel" v-show="this.$root.$settings.info_panel">
-        <div v-show="this.globMarket.length!=0 && this.capPercentETH !=0">
-            <p>Global MarketCap: <strong>{{this.globMarket}}<span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></p>
-            <p>Flippening: <strong>BTC {{this.capPercentBTC}} % - ETH {{this.capPercentETH}} %</strong></p>
-        </div>
-        <p v-show="this.totalValue() != 0 || this.totalProfLoss() != 0">Values: <strong>{{ this.totalValue() }} <span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong> | P/L: <strong>{{ this.totalProfLoss() }} <span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></p>
-    </div>
-
-    <div class="switchHolder">
-        <i title="Crypto list view" class="fas fa-th-list ansichtListe"></i>
-        <label class="switch" @click="changeView(isToggled)">
-            <input type="checkbox" v-model="isToggled" :checked="isToggled">
-            <span class="slider round"></span>
-        </label>
-        <i title="Tradingview multi window" class="fas fa-th-large ansichtTV"></i>
+    <div class="menuBar">
+        <ul class="menuBarMain">
+            <li>
+                <div class="switchHolder">
+                    <i title="Crypto list view" class="fas fa-th-list ansichtListe"></i>
+                    <label class="switch" @click="changeView(isToggled)">
+                        <input type="checkbox" v-model="isToggled" :checked="isToggled">
+                        <span class="slider round"></span>
+                    </label>
+                    <i title="Tradingview multi window" class="fas fa-th-large ansichtTV"></i>
+                </div>
+            </li>
+            <li>
+                <a v-show="this.$root.$settings.btcecho" id="BTCEchoIcon" class="echo-icon" target="_blank" title="News: BTC-ECHO.de" href="https://www.btc-echo.de/"><img class="shadow" :src="require(`../assets/favicon_be.png`)" height="40px" width="40px" /></a>
+            </li>
+            <li>
+                <countDown></countDown>
+            </li>
+            <li>
+                <div id="infoPanel" v-show="this.$root.$settings.info_panel && this.$root.$myCoins.length != 0">
+                        <div class="infoCard shadow"><p>Global Cap</p><strong v-if="!this.globLoader">{{ this.globMarket }}<span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong><i v-else class="fas fa-spinner fa-pulse"></i></div>
+                        <div class="infoCard shadow" v-show="this.totalValue() != 0 || this.totalProfLoss() != 0">
+                            <div><p>Values</p><strong>{{ this.totalValue() }} <span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></div>
+                        </div>
+                        <div class="infoCard shadow" v-show="this.totalValue() != 0 || this.totalProfLoss() != 0">
+                            <div><p>P/L</p><strong>{{ this.totalProfLoss() }} <span v-if="this.$root.$settings.fiat==='EUR'"> €</span><span v-else> $</span></strong></div>
+                        </div>
+                </div>
+            </li>
+            <li>
+                <settings></settings>
+            </li>
+        </ul>
     </div>
     <coinsList v-if="!isToggled" :key="componentKey"></coinsList>
     <blockList v-if="isToggled"></blockList>
-    <settings></settings>
-    <a v-show="this.$root.$settings.btcecho" id="BTCEchoIcon" class="echo-icon" target="_blank" title="News: BTC-ECHO.de" href="https://www.btc-echo.de/"><img :src="require(`../assets/favicon_be.png`)" height="40px" width="40px" /></a>
 </div>
 </template>
 
@@ -53,8 +68,7 @@ export default {
             maxCoins: 12, // 12 * 250 = 3000 Top of Cryptocurrencies
             coinsCounter: 0,
             globMarket: "",
-            capPercentBTC: 0,
-            capPercentETH: 0,
+            globLoader: true,
             totalValue(){
                 let all = 0;
                 let obj = this.$root.$boughtCoins;
@@ -165,14 +179,7 @@ export default {
                                   num = (Math.abs(Number(num)) / 1.0e+9).toFixed(2) + ((this2.$root.$settings.fiat == "EUR") ? " Mil" : " Bil");
                               }
                               this2.globMarket = num;
-                          }
-                      })
-                      Object.keys(obj.market_cap_percentage).map(function(k) {
-                          if (k == "btc") {
-                              this2.capPercentBTC = obj.market_cap_percentage[k].toFixed(2);
-                          }
-                          if (k == "eth") {
-                              this2.capPercentETH = obj.market_cap_percentage[k].toFixed(2);
+                              this2.globLoader = false;
                           }
                       })
                 } catch (e) {
@@ -333,6 +340,7 @@ button:not(.del) {
 #wrapper {
     height: 100vh;
     padding: 80px 10px;
+    padding-top: 0;
     margin: 0 auto;
 }
 
@@ -417,9 +425,7 @@ main>div {
 }
 
 .switchHolder {
-    position: absolute;
-    top: 25px;
-    left: 40px;
+    min-width: 85px;
 }
 
 .switch {
@@ -481,33 +487,67 @@ input:checked+.slider:before {
 }
 
 .fa-th-list {
-    position: absolute;
+    position: relative;
     top: 6px;
     font-size: 22px;
-    left: -30px;
+    left: -8px;
 }
 
 .fa-th-large {
-    position: absolute;
+    position: relative;
     top: 6px;
     font-size: 22px;
-    right: -30px;
+    right: -8px;
 }
 
-.echo-icon {
-    position: absolute;
-    top: 23px;
-    left: 125px;
+.shadow{
+    box-shadow: 5px 5px 5px 0 rgb(0 0 0 / 75%);
 }
 
-#infoPanel {
-    position: absolute;
-    top: 20px;
-    left: 0;
-    right: 0;
+#BTCEchoIcon img:hover{
+    transform: scale(1.1);
+}
+
+.menuBar{
+    position: relative;
+    margin-bottom: -25px;
+    min-height: 100px;
+}
+
+.menuBarMain {
+list-style: none;
+margin: 0;
+padding: 0;
+display: flex;
+}
+
+.menuBarMain>li {
+margin: 20px 10px;
+position: relative;
+}
+
+.menuBarMain>li:last-child{
     margin-left: auto;
-    margin-right: auto;
-    width: 400px;
+ order: 2;
+ position: initial;
+}
+
+.infoCard{
+    background-color: lightgray;
+    border: solid 1px rgb(255 148 0 / 60%);
+    padding: 10px 10px;
+    width: fit-content;
     text-align: center;
+    border-radius: 15px;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 10px;
+}
+
+.infoCard p:first-child{
+    margin-bottom: 3px;
+}
+#infoPanel{
+    margin-top: -7px;
 }
 </style>
