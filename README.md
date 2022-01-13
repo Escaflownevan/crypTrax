@@ -26,13 +26,13 @@ crypTrax track the cryptocurrencies you are interested in, compare them and calc
 
 ## Download
 
-Windows: Download latest [crypTrax-win.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-win.zip)
+Windows: Download latest [crypTrax-win.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-win.zip)<br>
 Run: Unzip -> open crypTrax.exe        
 
-Linux: Download latest [crypTrax-linux.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-linux.zip)
+Linux: Download latest [crypTrax-linux.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-linux.zip)<br>
 Run: Unzip -> ./cryptrax
 
-Mac: Download latest [crypTrax-mac.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-mac.zip)
+Mac: Download latest [crypTrax-mac.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-mac.zip)<br>
 Run: Unzip -> open cryptrax
 
 
