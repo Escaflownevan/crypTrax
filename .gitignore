@@ -1,8 +1,10 @@
 .DS_Store
 node_modules
+/data
 /dist
 yarn.lock
 sparkline_snippet.txt
+log.txt
 
 # local env files
 .env.local

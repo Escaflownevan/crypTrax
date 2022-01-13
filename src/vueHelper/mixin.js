@@ -1,22 +1,26 @@
 import Vue from 'vue';
+const CoinGecko = require('coingecko-api');
+const CoinGeckoClient = new CoinGecko();
+const ipcRenderer = window.require('electron').ipcRenderer;
 Vue.mixin({
     methods: {
-        sortData(key, data, type) {
-            let ordered = {};
-            let compareFunction = function(a, b) {
-                return data[b][key] - data[a][key];
-            }
-            if (type === 'asc') {
-                compareFunction = function(a, b) {
-                    return data[a][key] - data[b][key];
+        array_move(arr, old_index, new_index) {
+            if (new_index >= arr.length) {
+                var k = new_index - arr.length + 1;
+                while (k--) {
+                    arr.push(undefined);
                 }
             }
-            Object.keys(data).sort(compareFunction).forEach(function(key) {
-                ordered[key] = data[key];
-            })
-            return ordered;
+            arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+            return arr;
         },
-        saveLocal(name, string, data) {
+        saveLocal(name, data) {                                                     // save and load data to local json file
+            ipcRenderer.send('request-saveLocal', [name, data]);
+        },
+        loadLocal(name) {
+            ipcRenderer.send('request-loadLocal', name);
+        },
+        /*saveLocal(name, string, data) {                   // save and load data to browser
             if (data) {
                 localStorage.setItem(name, data);
             }
@@ -26,6 +30,17 @@ Vue.mixin({
         },
         loadLocal(name) {
             return JSON.parse(localStorage.getItem(name));
+        },*/
+        updateBTCprice() {
+            var get_btcPrice = async () => {
+                let data = await CoinGeckoClient.simple.price({ //for coin/btc price calculation
+                    ids: ['bitcoin'],
+                    vs_currencies: [this.$root._data.settings.fiat],
+                });
+                this.$root._data.apiCallsPerMinute += 1;
+                this.$root._data.btcPrice = Object.values(data.data.bitcoin)[0];
+            }
+            get_btcPrice();
         }
     }
 })

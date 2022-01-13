@@ -1,5 +1,12 @@
 <template>
-<div id="holderIframes" class="section group">
+<div v-if="settings.blockView" id="holderIframes" class="section group fixedMenu">
+    <div v-show="settingsTV.length != 0" v-for="item in settingsTV" :key="item" class="blockViewItem">
+        <iframe :src="'https://s.tradingview.com/widgetembed/?symbol=' + item + '&interval=' + settings.tv_candle_time +
+        '&symboledit=1&saveimage=0&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1'" />
+    </div>
+    <div v-show="settingsTV.length == 0" class="center">
+        <h1>Please add Currencies<br><i class="fas fa-plus-circle" @click="openTVsettings"></i></h1>
+    </div>
 </div>
 </template>
 
@@ -8,112 +15,71 @@ export default {
     name: 'blockList',
     data() {
         return {
-            settings: this.$root.$settings
+
         }
     },
-    mounted() {
-        this.$parent.loadTV();
+    computed: {
+        settingsTV(){
+            return this.$root._data.settings.tv
+        },
+        settings(){
+            return this.$root._data.settings
+        }
+    },
+    methods:{
+        openTVsettings(){
+            document.getElementById('openSet').click()
+            document.querySelector('#settingsMenu li:nth-child(6)').click()
+        }
     }
 }
 </script>
 
-<style lang="css" >
-
-h1{
+<style lang="scss" >
+h1 {
+    color: var(--h1color);
     text-align: center;
-    margin-top: 60px;
+    margin: 0 auto;
 }
 
-.noList{
+.noList {
     position: absolute;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
     left: 0;
     right: 0;
-    top: 20%
-}
-.noListArrow{
-    position: absolute;
-    top: 20px;
-    right: 100px;
-    color: #ff9400fc;
-    font-size: 40px;
+    top: 20%;
 }
 
-@keyframes bounceRight {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    -ms-transform: translateX(0);
-    transform: translateX(0);
-  }
-  40% {
-    -ms-transform: translateX(-30px);
-    transform: translateX(-30px);
-  }
-  60% {
-    -ms-transform: translateX(-15px);
-    transform: translateX(-15px);
-  }
+iframe {
+    width: 100%;
+    height: 400px;
 }
 
-.fa-arrow-right {
-  -webkit-animation: bounceRight 2s infinite;
-  animation: bounceRight 2s infinite;
-  float:right;
+#holderIframes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0 10px 60px;
+    margin-top: 20px;
 }
 
-iframe{
-  width: 100%;
-  height: 400px;
+.blockViewItem {
+    flex: 1 auto;
+    margin: 0 10px 10px;
+}
+.center{
+    margin: 0 auto;
+}
+.center i{
+    color: var(--primaryColor);
+    font-size: 50px;
+    margin-top: 30px;
 }
 
-.section {
-	clear: both;
-	padding: 0px;
-	margin: 0px;
-}
-
-.col {
-	display: block;
-	float:left;
-	margin: 1% 0 1% 1.6%;
-}
-
-.col:nth-child(odd) {
-    margin-left: 0;
-}
-
-.col:nth-child(even) {
-    padding-right: 15px;
-}
-
-.group:before,
-.group:after {
-    content:"";
-    display:table;
-}
-.group:after {
-    clear:both;
-}
-.group {
-zoom:1; /* For IE 6/7 */
-}
-
-.span_1_of_3 {
-    width: 49%;
-}
-
-@media only screen and (max-width: 600px) {
-	.col {
-        margin: 1% 0 1% 0%;
-    }
-
-	.span_1_of_3 {
-        width: 100%;
-    }
+.center i:hover{
+    transform: scale(1.1);
+    cursor: pointer;
 }
 </style>

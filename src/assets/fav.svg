@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="50" viewBox="0 0 44 50">
+    <defs>
+        <style>
+            .cls-1 {
+                fill: #111;
+            }
+            .cls-2 {
+                fill: #beaf97;
+            }
+            .cls-3 {
+                fill: #ce571d;
+            }
+        </style>
+    </defs>
+    <title>Favourite Link</title>
+    <g id="Layer_2" data-name="Layer 2">
+        <g id="favLink"><path class="cls-1" d="M28.41 12.88l-3-4-12.72 9.37 3 4 12.72-9.37zM16.58 26.63l-2.77 4.16 12.2 7.45 2.48-4.34-11.91-7.27z"/>
+            <g><path
+                class="cls-2"
+                d="M 31.5 15 A 7.5 7.5 0 1 0 24 7.5 a 7.5 7.5 0 0 0 7.5 7.5 z m 0 -10 A 2.5 2.5 0 1 1 29 7.5 A 2.5 2.5 0 0 1 31.5 5 z Z M 34.5 31 a 9.5 9.5 0 1 0 9.5 9.5 a 9.5 9.5 0 0 0 -9.5 -9.5 z m 0 14 a 4.5 4.5 0 1 1 4.5 -4.5 a 4.51 4.51 0 0 1 -4.5 4.5 z"/></g>
+        </g>
+        <g><path
+            class="cls-3"
+            d="M 8.5 16 a 8.5 8.5 0 1 0 8.5 8.5 A 8.51 8.51 0 0 0 8.5 16 z m 0 12 a 3.5 3.5 0 1 1 3.5 -3.5 A 3.5 3.5 0 0 1 8.5 28 z"/></g>
+    </g>
+
+</svg>

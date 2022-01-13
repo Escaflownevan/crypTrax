@@ -1,0 +1,181 @@
+:root {
+    --scroll-bar-color: #c5c5c5;
+    --scroll-bar-bg-color: transparent;
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-bar-color) var(--scroll-bar-bg-color);
+}
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+*::-webkit-scrollbar-track {
+    background: var(--scroll-bar-bg-color);
+}
+*::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-bar-color);
+    border-radius: 20px;
+    border: 3px solid var(--scroll-bar-bg-color);
+}
+html {
+    box-sizing: border-box;
+    max-height: 40px;
+    height: 40px;
+}
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    width: 100vw;
+    margin: 0;
+    height: 40px;
+}
+.window-content {
+    position: fixed;
+    bottom: 0;
+    background-color: #181c1f;
+    width: 100vw;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 41px;
+    overflow: hidden;
+}
+.list {
+    border-top: solid 1px black;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    height: 41px;
+}
+.listItem {
+    color: #c7c7c7;
+    display: flex;
+    align-items: center;
+    background-color: #212429;
+    border-bottom: 1px solid #2c3e50;
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    white-space: nowrap;
+}
+.listItem:nth-child(4n-1) {
+    background-color: #2f3238;
+}
+.listItem:hover {
+    cursor: pointer;
+}
+.tooltip:hover, .plAll:hover, .totalAll:hover {
+    cursor: default;
+}
+.coinName {
+    float: left;
+    text-align: left;
+    letter-spacing: 0.3px;
+}
+.coinPrice {
+    float: right;
+    text-align: right;
+    font-weight: 700;
+    letter-spacing: 0.9px;
+    line-height: 1.3;
+}
+.coinName {
+    margin-left: 10px;
+}
+.coinPrice {
+    margin-left: 25px;
+}
+section {
+    display: inline-block;
+}
+.myIcon {
+    width: 75px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.myIcon img {
+    margin: 5px 30px;
+}
+.myIcon img:hover {
+    cursor: pointer;
+}
+.myIcon.showAll {
+    width: fit-content;
+    margin-right: 30px;
+}
+.tooltip {
+    background-color: #ce571d;
+    padding: 0 26px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 40px;
+}
+.menuIcon {
+    width: fit-content;
+    height: 38px;
+    max-height: 40px;
+    border: solid 0.5px black;
+    background: linear-gradient(130deg, rgba(72, 77, 80, 1) 0%, rgba(31, 35, 38, 1) 100%);
+    padding: 0px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 1px 2px;
+}
+.menuIcon h3 {
+    font-size: 12px;
+    color: #61A77D;
+    font-weight: 100;
+}
+.menuIcon p {
+    margin: 0;
+    margin-top: 2px;
+    color: #fff;
+    font-weight: 100;
+    white-space: nowrap;
+}
+.hidden {
+    display: none;
+}
+#scrollLeft {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+}
+#scrollRight {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+}
+button {
+    outline: none;
+    background: #61A77D;
+    color: white;
+    font-weight: 700;
+    height: 40px;
+    width: 22px;
+    display: none;
+}
+body:hover button {
+    display: block;
+}
+.plAll p, .totalAll p {
+    margin: 0;
+    white-space: nowrap;
+}
+.totalAll, .plAll {
+    text-align: center;
+    color: #c7c7c7
+}
+.totalAll {
+    border-right: solid 0.5px #333;
+    padding-right: 5px;
+}
+.plAll {
+    margin-left: 5px;
+}
