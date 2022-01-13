@@ -1,4 +1,4 @@
-# ![alt Text](https://i.ibb.co/ZWPVvQr/logo-1.png =x100)
+# crypTrax
 
 crypTrax is a project created with VUE.js + Electron. Keep track of your cryptocurrencies. Data source is used by coingecko.com API.
 
