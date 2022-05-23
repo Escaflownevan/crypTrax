@@ -1,74 +1,58 @@
 {
-    "name": "crypTrax",
-    "version": "1.1.0",
-    "author": "Esca<cryptrax0@gmail.com>",
-    "homepage": "https://johndoe.com/",
-    "description": "VUE + Electron. App to list,watch and compare crypto currencies and other stuff..",
-    "license": "UNLICENSED",
-    "scripts": {
-        "serve": "vue-cli-service serve",
-        "build": "vue-cli-service build",
-        "lint": "vue-cli-service lint",
-        "electron:build": "vue-cli-service electron:build --win --x64 --dir",
-        "electron:build-linux": "vue-cli-service electron:build -l --dir",
-        "electron:build-mac": "vue-cli-service electron:build -m --dir",
-        "electron:serve": "vue-cli-service electron:serve",
-        "postinstall": "electron-builder install-app-deps",
-        "postuninstall": "electron-builder install-app-deps"
-    },
-    "main": "background.js",
-    "mac": {
-   "icon": "./public/icon.icns",    
-   "category": "public.app-category.utilities"
- },
-    "dependencies": {
-        "@fortawesome/fontawesome-free": "^5.15.4",
-        "apexcharts": "^3.32.1",
-        "auto-launch": "^5.0.5",
-        "coingecko-api": "^1.0.10",
-        "core-js": "^3.6.5",
-        "electron-window-state": "^5.0.3",
-        "sass": "^1.43.4",
-        "sass-loader": "^10",
-        "scss": "^0.2.4",
-        "vex-js": "^4.1.0",
-        "vue": "^2.6.11",
-        "vue-apexcharts": "^1.6.2",
-        "vue-multiselect": "^2.1.6",
-        "vue-sparklines": "https://github.com/Escaflownevan/vue-sparklines.git",
-        "vue-template-compiler": "^2.0.0",
-        "vuedraggable": "^2.24.3",
-        "vuejs-datepicker": "^1.6.2",
-        "vuetify": "^2.6.1"
-    },
-    "devDependencies": {
-        "@vue/cli-plugin-babel": "~4.5.0",
-        "@vue/cli-plugin-eslint": "~4.5.0",
-        "@vue/cli-service": "~4.5.0",
-        "babel-eslint": "^10.1.0",
-        "electron": "^13.0.0",
-        "electron-devtools-installer": "^3.1.0",
-        "eslint": "^6.7.2",
-        "eslint-plugin-vue": "^6.2.2",
-        "vue-cli-plugin-electron-builder": "~2.1.1"
-    },
-    "eslintConfig": {
-        "root": true,
-        "env": {
-            "node": true
-        },
-        "extends": [
-            "plugin:vue/essential",
-            "eslint:recommended"
-        ],
-        "parserOptions": {
-            "parser": "babel-eslint"
-        },
-        "rules": {}
-    },
-    "browserslist": [
-        "> 1%",
-        "last 2 versions",
-        "not dead"
-    ]
+  "name": "crypTrax",
+  "version": "1.2.0",
+  "description": "VUE + Electron. Keep track cryptocurrencies. Compare your coins, import exchanges balances or wallet balances, Tradingview.com for detail view, etc..",
+  "main": "./dist/main/index.js",
+  "scripts": {
+    "dev": "node .electron-nuxt/dev.js",
+    "build": "node .electron-nuxt/build.js --win",
+    "build-linux": "node .electron-nuxt/build.js --linux",
+    "build-mac": "node .electron-nuxt/build.js --mac",
+    "preinstall": "node .electron-nuxt/check-engines.js",
+    "postinstall": "electron-builder install-app-deps "
+  },
+  "keywords": ["cryptocurrency", "tracker", "cryptocurrency-exchanges", "cryptocurrency-wallets"],
+  "author": "Esca <cryptrax0@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/Escaflownevan/crypTrax",
+  "engines": {
+    "node": ">=14.14.9"
+  },
+  "resolutions": {
+    "@types/node": "14.14.9"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "5.15.3",
+    "@nuxtjs/vuetify": "^1.12.1",
+    "@xpda-dev/core": "^0.1.6",
+    "@xpda-dev/electron-builder": "^0.2.1",
+    "@xpda-dev/electron-launcher": "^0.3.0",
+    "@xpda-dev/webpack-step": "^0.1.6",
+    "apexcharts": "^3.35.0",
+    "auto-launch": "^5.0.5",
+    "coingecko-api": "^1.0.10",
+    "cross-env": "^7.0.3",
+    "crypto-balances-2": "^1.0.9",
+    "crypto-portfolio-viewer": "^1.0.2",
+    "dateformat": "^5.0.3",
+    "deepmerge": "^4.2.2",
+    "electron": "^16.0.5",
+    "electron-builder": "^22.14.5",
+    "electron-devtools-installer": "^3.2.0",
+    "electron-window-state": "^5.0.3",
+    "node-sass": "^6.0.1",
+    "nuxt": "^2.15.8",
+    "roboto-fontface": "^0.10.0",
+    "sass-loader": "10",
+    "sortablejs": "^1.15.0",
+    "vue-apexcharts": "^1.6.2",
+    "vue-rss-feed": "^0.2.4",
+    "vuetify": "^2.5.10",
+    "vuetify-dialog": "^2.0.17",
+    "vuex-electron-ipc": "https://github.com/Escaflownevan/vuex-electron-ipc",
+    "vuex-persistfile": "https://github.com/Escaflownevan/vuex-persistfile.git",
+    "webpack": "^4.46.0",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {}
 }

@@ -1,0 +1,93 @@
+:root {
+  --primaryColor: #ce571d;
+  --secondaryColor: #beaf97;
+  /* khaki */
+  --thirdColor: #61A77D;
+  /* green */
+  --bodyBGR: #e8e5e5;
+  --coinListHead: var(--secondaryColor);
+  --settingsBGR: #fff;
+  --h1color: #000;
+  --h2color: #000;
+  --h3color: #fff;
+  --textColorSettings: black;
+  --listBGR1: lightgrey;
+  --listBGR2: #bfbfbf;
+  --listTextColor: #252525;
+  --dialogBGR: #d7d7d7;
+  --iActive: var(--primaryColor);
+  --inputActiveFilter: none;
+  --scrollbarColor: #928269;
+  --menuActiveShadow: rgba(206, 87, 29, 0.8);
+  --headTooltipBGR: #beaf97;
+  --headTooltipText: #000;
+  --infoBarValueColor: #000;
+  --infoBarTitleColor: #2b2626;
+  --menuBarBGR: linear-gradient(130deg, #beaf97 0%, #6e7479 100%);
+  --settingsMenuTextColor: #666;
+  --settingsMenuTextActiveColor: #000;
+}
+:root.dark {
+  --primaryColor: #ce571d;
+  /* orange */
+  --secondaryColor: #beaf97;
+  /* khaki */
+  --thirdColor: #61A77D;
+  /* green */
+  --bodyBGR: #181c1f;
+  --coinListHead: #151517;
+  --settingsBGR: #272d32;
+  --h1color: #fff;
+  --h2color: #dadada;
+  --h3color: #fff;
+  --textColorSettings: #fff;
+  --listBGR1: #212429;
+  --listBGR2: #2a2c30;
+  --listTextColor: #c2c2c2;
+  --dialogBGR: #424242;
+  --iActive: var(--primaryColor);
+  --inputActiveFilter: none;
+  --scrollbarColor: var(--primaryColor);
+  --menuActiveShadow: rgba(206, 87, 29, 0.30);
+  --headTooltipBGR: #1f2326;
+  --headTooltipText: #fff;
+  --infoBarValueColor: #f0f4f7;
+  --infoBarTitleColor: #7b7b7b;
+  --menuBarBGR: linear-gradient(130deg, rgba(72, 77, 80, 1) 0%, rgba(31, 35, 38, 1) 100%);
+  --settingsMenuTextColor: #7b7b7b;
+  --settingsMenuTextActiveColor: #fff;
+}
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #F5F5F5;
+  border-radius: 10px;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: var(--scrollbarColor);
+}
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+.fa-spinner {
+  color: var(--primaryColor) !important;
+}
+.noHover:hover {
+  cursor: default;
+}
+.displayNone {
+  display: none;
+}
+.displayNone.show {
+  display: block;
+}
