@@ -226,19 +226,19 @@ Run: Unzip -> open cryptrax
 
 ## Program in use
 crypTrax Main
-![](/screenshots/main.jpg)
+![](https://i.ibb.co/Yp7RqfG/main.jpg)
 
 
-![](/screenshots/tv.jpg)
+![](https://i.ibb.co/DRJmwJF/tv.jpg)
 
 
 ![](/screenshots/compare.jpg)
 
 
-![](/screenshots/news.jpg)
+![](https://i.ibb.co/nnCM1mD/news.jpg)
 
 Widget Bar
-![](/screenshots/bar.jpg)
+![](https://i.ibb.co/cNxBK1b/bar.jpg)
 
 
 ### Donation
