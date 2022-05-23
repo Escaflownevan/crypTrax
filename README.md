@@ -233,7 +233,7 @@ crypTrax Main
 <img src="/screenshots/tv.png" />
 
 
-<img src="/screenshots/compare.jpg" />
+<img src="/screenshots/compare.png" />
 
 
 <img src="/screenshots/news.png" />
