@@ -217,7 +217,7 @@ crypTrax track the cryptocurrencies you are interested in, compare them and calc
 Windows: Download latest [crypTrax-win.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-1.2.1-win.zip)<br>
 Run: Unzip -> open crypTrax.exe        
 
-Linux: Download latest [crypTrax-linux.zip](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-1.2.1-linux.tar.gz)<br>
+Linux: Download latest [crypTrax-linux.tar.gz](https://github.com/Escaflownevan/crypTrax/releases/latest/download/crypTrax-1.2.1-linux.tar.gz)<br>
 Run: Unzip -> ./cryptrax
 
 
